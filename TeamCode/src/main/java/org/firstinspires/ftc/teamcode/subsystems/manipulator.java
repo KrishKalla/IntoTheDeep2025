@@ -15,7 +15,7 @@ public class manipulator{
      private CRServo leftRotor = null;
      private CRServo rightRotor = null;
 
-     private String rotor;
+     private String state;
 
      public manipulator(){
           rotor = "PRESET";
