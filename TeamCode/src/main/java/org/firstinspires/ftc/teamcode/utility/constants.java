@@ -11,5 +11,11 @@ public class constants {
         RESET
     }
 
+    public enum HSLIDES {
+        EXTENDED,
+        RETRACTED,
+        CUSTOM
+    }
+
 
 }
