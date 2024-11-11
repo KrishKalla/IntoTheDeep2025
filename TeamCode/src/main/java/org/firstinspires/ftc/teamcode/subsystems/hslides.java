@@ -18,25 +18,15 @@ public class hslides {
 
     public void setState(constants.HSLIDES curr_state) {
         // replace below constnats with constants in constants.java once we get them
-        double pivot_left_extended;
-        double pivot_right_extended;
-
-        double pivot_left_retracted;
-        double pivot_right_retracted;
-
-        double i;
-        double x;
-        double length;
-
         switch (curr_state) {
             case EXTENDED:
-                leftservo.setPosition(pivot_left_extended);
-                rightservo.setPosition(pivot_right_extended)
+                leftservo.setPosition(constants.pivot_left_extended);
+                rightservo.setPosition(constants.pivot_right_extended)
                 state = "EXTENDED";
                 break;
             case RETRACTED:
-                leftservo.setPosition(pivot_left_retracted);
-                rightservo.setPosiiton(pivot_right_retracted);
+                leftservo.setPosition(constants.pivot_left_retracted);
+                rightservo.setPosiiton(constants.pivot_right_retracted);
                 state = "RETRACTED";
                 break
             case CUSTOM:
@@ -44,7 +34,7 @@ public class hslides {
                     state = "INVALID";
                     break;
                 }
-                double ninetytheta = Math.acos(((x+i)/2)/length);
+                double ninetytheta = Math.acos(((constants.x+constants.i)/2)/constants.length);
                 double theta = 90-ninetytheta;
                 leftservo.setPosition(theta);
                 rightservo.setPosition(180-theta);

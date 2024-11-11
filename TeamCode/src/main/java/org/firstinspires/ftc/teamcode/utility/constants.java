@@ -17,5 +17,13 @@ public class constants {
         CUSTOM
     }
 
+    public static double pivot_left_extended;
+    public static double pivot_right_extended;
 
+    public static double pivot_left_retracted;
+    public static double pivot_right_retracted;
+
+    public static double i;
+    public static double x;
+    public static double length
 }
