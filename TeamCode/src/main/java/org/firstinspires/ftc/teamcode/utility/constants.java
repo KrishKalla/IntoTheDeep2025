@@ -17,13 +17,17 @@ public class constants {
         CUSTOM
     }
 
+    //set servo positions for max extension and retraction
     public static double pivot_left_extended;
     public static double pivot_right_extended;
 
     public static double pivot_left_retracted;
     public static double pivot_right_retracted;
 
+    //initial distance of pivot
     public static double i;
-    public static double x;
-    public static double length
+    //length of bars
+    public static double length;
+    //step size of horizontal slides
+    public static double h_step;
 }
