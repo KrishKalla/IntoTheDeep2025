@@ -15,7 +15,6 @@ public class claw_test extends LinearOpMode {
 
     manipulator claw;
     String clawState = null;
-  
     private static ElapsedTime timer;
 
     @Override
