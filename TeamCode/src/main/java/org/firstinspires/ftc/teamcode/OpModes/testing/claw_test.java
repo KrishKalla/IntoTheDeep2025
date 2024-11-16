@@ -14,6 +14,7 @@ import org.firstinspires.ftc.teamcode.utility.constants;
 public class claw_test extends LinearOpMode{
 
     manipulator claw;
+	String clawState = null;
     private static ElapsedTime timer;
 
     @Override
@@ -26,6 +27,7 @@ public class claw_test extends LinearOpMode{
 
         while (opModeInInit()) {
             telemetry.addLine("Ready to Start... Initialization Mode");
+			clawState = claw.toString();
             getTelemetry();
         }
 
@@ -35,7 +37,6 @@ public class claw_test extends LinearOpMode{
         while (opModeIsActive() && !isStopRequested()){
             if (gamepad1.right_trigger >= 0.3){
                 claw.activate(constants.ROTOR_STATE.ON);
-
             }
             if (gamepad1.left_trigger >= 0.3){
                 claw.activate(constants.ROTOR_STATE.REVERSE);
@@ -54,4 +55,6 @@ public class claw_test extends LinearOpMode{
         telemetry.update();
     }
 
-}
+	public void updateStates(){
+		clawState = claw.toString();
+	}
