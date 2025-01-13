@@ -11,13 +11,14 @@ import org.firstinspires.ftc.teamcode.utility.constants;
 
 
 @TeleOp
-public class claw_test extends LinearOpMode{
+public class claw_test extends LinearOpMode {
 
     manipulator claw;
+    String clawState = null;
     private static ElapsedTime timer;
 
     @Override
-    public void runOpMode(){
+    public void runOpMode() {
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         claw = new manipulator();
         timer = new ElapsedTime();
@@ -26,18 +27,18 @@ public class claw_test extends LinearOpMode{
 
         while (opModeInInit()) {
             telemetry.addLine("Ready to Start... Initialization Mode");
+            clawState = claw.toString();
             getTelemetry();
         }
 
         waitForStart();
         timer.reset();
 
-        while (opModeIsActive() && !isStopRequested()){
-            if (gamepad1.right_trigger >= 0.3){
+        while (opModeIsActive() && !isStopRequested()) {
+            if (gamepad1.right_trigger >= 0.3) {
                 claw.activate(constants.ROTOR_STATE.ON);
-
             }
-            if (gamepad1.left_trigger >= 0.3){
+            if (gamepad1.left_trigger >= 0.3) {
                 claw.activate(constants.ROTOR_STATE.REVERSE);
             }
             if (gamepad1.right_trigger < 0.3 && gamepad1.left_trigger < 0.3) {
@@ -48,10 +49,13 @@ public class claw_test extends LinearOpMode{
         }
     }
 
-    public void getTelemetry(){
+    public void getTelemetry() {
         telemetry.addData("Claw State: ", claw.toString());
         telemetry.addData("Timer: ", timer);
         telemetry.update();
     }
 
+    public void updateStates() {
+        clawState = claw.toString();
+    }
 }
