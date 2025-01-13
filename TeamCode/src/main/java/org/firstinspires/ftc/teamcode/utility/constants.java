@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode.utility;
 
+import com.acmerobotics.dashboard.config.Config;
 
+@Config
 public class constants {
 
     // Manipulator Constants
@@ -43,18 +45,18 @@ public class constants {
     }
 
     //set servo positions for max extension and retraction
-    public static double pivot_left_extended;
-    public static double pivot_right_extended;
+    public static double pivot_left_extended = 0.25;
+    public static double pivot_right_extended = 0.57;
 
-    public static double pivot_left_retracted;
-    public static double pivot_right_retracted;
+    public static double pivot_left_retracted = 0.05;
+    public static double pivot_right_retracted = 0.79;
 
     //initial distance of pivot
-    public static double i;
+    public static double i = 11.75;
     //length of bars
-    public static double length;
-    //step size of horizontal slides
-    public static double cutoff;
+    public static double length = 7;
+    //max length of hslides
+    public static double cutoff = 18.75;
 
     //HSLIDE CONSTANTS
     public static int BASE = 0;
@@ -66,9 +68,9 @@ public class constants {
     public static int HIGH_RUNG = 225;
 
     //arm constants
-    public static double GROUND = 0;
-    public static double VERTICAL = 90;
-    public static double CENTER = 90;
+    public static double GROUND = 0.05;
+    public static double VERTICAL = 0.6;
+    public static double CENTER = 0.46;
 
     //claw constants
     //claw positions

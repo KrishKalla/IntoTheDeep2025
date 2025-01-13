@@ -10,7 +10,7 @@ import org.firstinspires.ftc.teamcode.utility.constants;
 public class hslides {
     private String state = "INIT";
     private final double cutoff = constants.cutoff;
-    private double x;
+    private double x = constants.i;
 
     private Servo leftServo;
     private Servo rightServo;
@@ -19,8 +19,8 @@ public class hslides {
     }
 
     public void init(HardwareMap map) {
-        leftServo = map.get(Servo.class, "left");
-        rightServo = map.get(Servo.class, "right");
+        leftServo = map.get(Servo.class, "extendL");
+        rightServo = map.get(Servo.class, "extendR");
 
         reset();
         state = "INIT";
@@ -47,17 +47,17 @@ public class hslides {
 
     //Theta calculation based on x
     private double calculate(double x){
-        return 90 - Math.acos(((x+constants.i)/2)/constants.length);
+        return (Math.PI/2 - Math.acos(((x+constants.i)/2)/constants.length)) * 1/(Math.PI);
     }
 
     public void setCustomExtension(int direction) {
         double step = 0;
         if (direction == 1) {
-            step = 2;
+            step = 0.25;
             setExtension(x + step);
         }
         else if (direction == -1) {
-            step = -2;
+            step = -0.25;
             setExtension(x + step);
         }
 
@@ -68,9 +68,10 @@ public class hslides {
             state = "INVALID";
         }
         else {
-            double theta = calculate(x);
+            this.x = x;
+            double theta = calculate(this.x);
             leftServo.setPosition(theta);
-            rightServo.setPosition(180 - theta);
+            rightServo.setPosition(1 - theta);
             state = "CUSTOM";
         }
     }

@@ -8,6 +8,8 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.utility.constants;
 
+import java.util.Objects;
+
 public class arm {
     private Servo leftPivot;
     private Servo rightPivot;
@@ -20,9 +22,9 @@ public class arm {
     public void init(HardwareMap map) {
         state = "INIT";
 
-        leftPivot = map.get(Servo.class, "leftpivot");
-        rightPivot = map.get(Servo.class, "rightpivot");
-        centerPivot = map.get(Servo.class, "centerpivot");
+        leftPivot = map.get(Servo.class, "shoulderL");
+        rightPivot = map.get(Servo.class, "shoulderR");
+        centerPivot = map.get(Servo.class, "elbow");
 
         reset();
     }
@@ -31,7 +33,7 @@ public class arm {
         switch (preset) {
             case GROUND:
                 state = "GROUND";
-                leftPivot.setPosition(constants.GROUND);
+                leftPivot.setPosition(1-constants.GROUND);
                 rightPivot.setPosition(constants.GROUND);
                 break;
             case VERTICAL:
@@ -49,10 +51,10 @@ public class arm {
         state = "CUSTOM ROTATION";
         double step = 0;
         if (direction == 1) {
-            step = 2;
+            step = -0.025;
         }
         else if (direction == -1) {
-            step = -2;
+            step = 0.025;
         }
 
         double target = centerPivot.getPosition() + step;
@@ -79,9 +81,10 @@ public class arm {
 
     private void reset() {
         state = "RESET";
-        leftPivot.setPosition(constants.GROUND);
-        rightPivot.setPosition(constants.GROUND);
         centerPivot.setPosition(constants.CENTER);
+        leftPivot.setPosition(1-constants.GROUND);
+        rightPivot.setPosition(constants.GROUND);
         state = "READY";
+
     }
 }

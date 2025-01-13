@@ -47,10 +47,10 @@ public class tele extends OpMode{
 
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
-        slides = new slides();
-        claw = new claw();
-        hslides = new hslides();
         arm = new arm();
+        claw = new claw();
+        slides = new slides();
+        hslides = new hslides();
 
         slides.init(hardwareMap);
         claw.init(hardwareMap);
@@ -73,7 +73,9 @@ public class tele extends OpMode{
 
     @Override
     public void start() {
+
         follower.startTeleopDrive();
+
     }
 
     @Override

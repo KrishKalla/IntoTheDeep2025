@@ -21,8 +21,8 @@ public class slides {
     public void init(HardwareMap map) {
         state = "INIT";
 
-        left = map.get(DcMotorEx.class, "leftlift");
-        right = map.get(DcMotorEx.class, "rightlift");
+        left = map.get(DcMotorEx.class, "slideL");
+        right = map.get(DcMotorEx.class, "slideR");
 
         left.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
         right.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
