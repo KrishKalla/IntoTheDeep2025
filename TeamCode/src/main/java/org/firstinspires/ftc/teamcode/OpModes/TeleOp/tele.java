@@ -221,8 +221,9 @@ public class tele extends OpMode{
         telemetry.addData("Heading: ", Math.toDegrees(follower.getPose().getHeading()));
         telemetry.addLine("---------SLIDES--------");
         telemetry.addLine(slides.toString());
-        telemetry.addLine(hslides.toString());
         telemetry.addData("Slide Speed: ", slides.getSpeed());
+        telemetry.addLine(hslides.toString());
+        telemetry.addData("hslide state: ", hslides.getState());
         telemetry.addLine("----------CLAW---------");
         telemetry.addLine(claw.toString());
         telemetry.addLine(arm.toString());

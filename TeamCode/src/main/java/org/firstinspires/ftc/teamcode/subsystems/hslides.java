@@ -82,11 +82,11 @@ public class hslides {
             step = constants.CRUDE_STEP;
 
         }
-        else if (direction == -1) {
+        if (direction == -1) {
             step = -constants.CRUDE_STEP;
         }
 
-        if (leftServo.getPosition() + step > constants.pivot_left_extended || leftServo.getPosition() - step < constants.pivot_left_retracted || rightServo.getPosition() + step > constants.pivot_right_retracted || rightServo.getPosition() - step < constants.pivot_right_extended) {
+        if (leftServo.getPosition() + step < constants.pivot_left_retracted || leftServo.getPosition() + step > constants.pivot_left_extended || rightServo.getPosition() - step > constants.pivot_right_retracted || rightServo.getPosition() - step < constants.pivot_right_extended) {
             state = "INVALID";
         }
         else {
@@ -95,7 +95,9 @@ public class hslides {
         }
     }
 
-
+    public String getState() {
+        return state;
+    }
     @NonNull
     @Override
     public String toString() {
