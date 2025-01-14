@@ -2,8 +2,8 @@ package org.firstinspires.ftc.teamcode.subsystems;
 
 import androidx.annotation.NonNull;
 
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.utility.constants;
@@ -21,16 +21,24 @@ public class slides {
     public void init(HardwareMap map) {
         state = "INIT";
 
-        left = map.get(DcMotorEx.class, "leftlift");
-        right = map.get(DcMotorEx.class, "rightlift");
+        left = map.get(DcMotorEx.class, "slideL");
+        right = map.get(DcMotorEx.class, "slideR");
 
         left.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
         right.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
 
-        left.setDirection(DcMotorEx.Direction.REVERSE);
-        right.setDirection(DcMotorEx.Direction.FORWARD);
+        left.setDirection(DcMotorEx.Direction.FORWARD);
+        right.setDirection(DcMotorEx.Direction.REVERSE);
 
         reset();
+    }
+
+    public void init(HardwareMap map, boolean isTesting){
+        if (isTesting){
+            init(map);
+            left.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+            right.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+        }
     }
 
 
@@ -90,18 +98,18 @@ public class slides {
     }
 
     public void setHeight(int target) {
-        while (getHeight() != target){
-            speed = getVariableSpeed(target);
+//        speed = getVariableSpeed(target);
+        speed = constants.MAX_SLIDE_SPEED;
 
-            left.setTargetPosition(target);
-            right.setTargetPosition(target);
+        left.setTargetPosition(target);
+        right.setTargetPosition(target);
 
-            left.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
-            right.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
+        left.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
+        right.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
 
-            left.setPower(speed);
-            right.setPower(speed);
-        }
+        left.setPower(speed);
+        right.setPower(speed);
+
     }
 
 
@@ -111,28 +119,29 @@ public class slides {
         if (direction == 1) {
             step = 5;
         }
-        if (direction == -1) {
+        else if (direction == -1) {
             step = -5;
         }
         int target = getHeight() + step;
 
-        while (getHeight() != target){
-            speed = getVariableSpeed(target);
-
-            left.setTargetPosition(target);
-            right.setTargetPosition(target);
-
-            left.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
-            right.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
-
-            left.setPower(speed);
-            right.setPower(speed);
-        }
+        setHeight(target);
         step = 0;
     }
 
     public int getHeight() {
         return ((left.getCurrentPosition() + right.getCurrentPosition()) / 2);
+    }
+
+    public int getRightHeight() {
+        return right.getCurrentPosition();
+    }
+
+    public int getLeftHeight() {
+        return left.getCurrentPosition();
+    }
+
+    public double getSpeed() {
+        return speed;
     }
 
     @Override

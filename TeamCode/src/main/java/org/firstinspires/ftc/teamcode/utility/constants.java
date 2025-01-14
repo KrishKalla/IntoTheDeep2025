@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode.utility;
 
+import com.acmerobotics.dashboard.config.Config;
 
+@Config
 public class constants {
 
     // Manipulator Constants
@@ -30,6 +32,7 @@ public class constants {
 
     public enum ARM {
         GROUND, //dpad_down
+        PRE_PICKUP,
         VERTICAL, //dpad_up
         RESET //dpad_left
     }
@@ -43,40 +46,47 @@ public class constants {
     }
 
     //set servo positions for max extension and retraction
-    public static double pivot_left_extended;
-    public static double pivot_right_extended;
+    public static double pivot_left_extended = 0.25;
+    public static double pivot_right_extended = 0.57;
 
-    public static double pivot_left_retracted;
-    public static double pivot_right_retracted;
+    public static double pivot_left_retracted = 0.05;
+    public static double pivot_right_retracted = 0.79;
+    public static double CRUDE_STEP = 0.007;
 
     //initial distance of pivot
-    public static double i;
+    public static double i = 11.75;
     //length of bars
-    public static double length;
-    //step size of horizontal slides
-    public static double cutoff;
+    public static double length = 7;
+    //max length of hslides
+    public static double cutoff = 18.75;
 
     //HSLIDE CONSTANTS
     public static int BASE = 0;
     public static int LOW_BAR = 50;
-    public static int HIGH_BAR = 155;
-    public static int LOW_BASKET = 175;
-    public static int HIGH_BASKET = 250;
-    public static int LOW_RUNG = 150;
-    public static int HIGH_RUNG = 225;
+    public static int HIGH_BAR = 970;
+    public static int LOW_BASKET = 1250;
+    public static int HIGH_BASKET = 2900;
+    public static int LOW_RUNG = 1200;
+    public static int HIGH_RUNG = 2500;
+    public static double MAX_SLIDE_SPEED = 0.3;
 
     //arm constants
-    public static double GROUND = 0;
-    public static double VERTICAL = 90;
-    public static double CENTER = 90;
+    public static double GROUND = 0.04;
+    public static double PRE_PICKUP = 0.07;
+    public static double VERTICAL = 0.575;
+
+    public static double INIT = 0.835;
+    public static double CENTER = 0.485;
+    public static double ARM_STEP = 0.0065;
 
     //claw constants
     //claw positions
-    public static double OPEN = 45;
-    public static double CLOSED = 0;
+    public static double OPEN = .45;
+    public static double CLOSED = 0.15;
     //claw rotations
     public static double STRAIGHT = 0;
-    public static double ROTATED = 90;
+    public static double ROTATED = 0.5;
+    public static double WRIST_STEP = 0.025;
 
 
 }
