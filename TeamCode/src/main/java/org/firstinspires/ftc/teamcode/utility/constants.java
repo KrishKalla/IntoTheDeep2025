@@ -51,6 +51,7 @@ public class constants {
 
     public static double pivot_left_retracted = 0.05;
     public static double pivot_right_retracted = 0.79;
+    public static double CRUDE_STEP = 0.007;
 
     //initial distance of pivot
     public static double i = 11.75;

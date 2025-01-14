@@ -190,11 +190,11 @@ public class tele extends OpMode{
         }
 
         if (gamepad2.right_bumper) {
-            hslides.setCustomExtension(1);
+            hslides.crudeSetCustomExtension(1);
         }
 
         if (gamepad2.left_bumper) {
-            hslides.setCustomExtension(-1);
+            hslides.crudeSetCustomExtension(-1);
         }
 
         if (gamepad2.options) {

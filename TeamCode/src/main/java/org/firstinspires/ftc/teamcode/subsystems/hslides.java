@@ -76,6 +76,25 @@ public class hslides {
         }
     }
 
+    public void crudeSetCustomExtension(int direction) {
+        double step = 0;
+        if (direction == 1) {
+            step = constants.CRUDE_STEP;
+
+        }
+        else if (direction == -1) {
+            step = -constants.CRUDE_STEP;
+        }
+
+        if (leftServo.getPosition() + step > constants.pivot_left_extended || leftServo.getPosition() - step < constants.pivot_left_retracted || rightServo.getPosition() + step > constants.pivot_right_retracted || rightServo.getPosition() - step < constants.pivot_right_extended) {
+            state = "INVALID";
+        }
+        else {
+            leftServo.setPosition(leftServo.getPosition() + step);
+            rightServo.setPosition(rightServo.getPosition() - step);
+        }
+    }
+
 
     @NonNull
     @Override
