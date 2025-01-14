@@ -80,7 +80,7 @@ public class tele extends OpMode{
 
     @Override
     public void loop() {
-        follower.setTeleOpMovementVectors(-gamepad1.left_stick_y, -gamepad1.left_stick_x, -gamepad1.right_stick_x, false);
+        follower.setTeleOpMovementVectors(-gamepad1.left_stick_y, -gamepad1.left_stick_x, -gamepad1.right_stick_x, true);
         follower.update();
 
         //region Controller 1 Inputs
@@ -97,14 +97,14 @@ public class tele extends OpMode{
             slides.preset(constants.VSLIDES.HIGH_BASKET);
         }
 
-        if (gamepad1.cross) {
+        if (gamepad1.square) {
             slides.preset(constants.VSLIDES.LOW_BAR);
         }
 
         if (gamepad1.triangle) {
             slides.preset(constants.VSLIDES.HIGH_BAR);
         }
-        if (gamepad1.square) {
+        if (gamepad1.cross) {
             slides.preset(constants.VSLIDES.LOW_RUNG);
         }
         if (gamepad1.circle) {
@@ -163,9 +163,13 @@ public class tele extends OpMode{
         if (gamepad2. dpad_up) {
             arm.preset(constants.ARM.VERTICAL);
         }
+        if (gamepad2.dpad_right) {
+            arm.preset(constants.ARM.PRE_PICKUP);
+        }
         if (gamepad2. dpad_left) {
             arm.preset(constants.ARM.RESET);
         }
+
 
         if (gamepad2.left_stick_x > 0.3) {
             arm.setCustomRotation(1);
@@ -218,6 +222,7 @@ public class tele extends OpMode{
         telemetry.addLine("---------SLIDES--------");
         telemetry.addLine(slides.toString());
         telemetry.addLine(hslides.toString());
+        telemetry.addData("Slide Speed: ", slides.getSpeed());
         telemetry.addLine("----------CLAW---------");
         telemetry.addLine(claw.toString());
         telemetry.addLine(arm.toString());

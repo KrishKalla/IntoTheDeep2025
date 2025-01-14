@@ -51,10 +51,10 @@ public class claw {
         wristState = "CUSTOM";
         double step = 0;
         if (direction == -1) {
-            step = -1;
+            step = constants.WRIST_STEP;
         }
         else if (direction == 1) {
-            step = 1;
+            step = -constants.WRIST_STEP;
         }
 
         double target = wrist.getPosition() + step;

@@ -26,7 +26,7 @@ public class arm {
         rightPivot = map.get(Servo.class, "shoulderR");
         centerPivot = map.get(Servo.class, "elbow");
 
-        reset();
+        reset(constants.INIT);
     }
 
     public void preset(constants.ARM preset) {
@@ -38,8 +38,13 @@ public class arm {
                 break;
             case VERTICAL:
                 state = "VERTICAL";
-                leftPivot.setPosition(constants.VERTICAL);
+                leftPivot.setPosition(1-constants.VERTICAL);
                 rightPivot.setPosition(constants.VERTICAL);
+                break;
+            case PRE_PICKUP:
+                state = "PRE_PICKUP";
+                leftPivot.setPosition(1-constants.PRE_PICKUP);
+                rightPivot.setPosition(constants.PRE_PICKUP);
                 break;
             case RESET:
                 reset();
@@ -51,10 +56,10 @@ public class arm {
         state = "CUSTOM ROTATION";
         double step = 0;
         if (direction == 1) {
-            step = -0.025;
+            step = constants.ARM_STEP;
         }
         else if (direction == -1) {
-            step = 0.025;
+            step = -constants.ARM_STEP;
         }
 
         double target = centerPivot.getPosition() + step;
@@ -84,6 +89,15 @@ public class arm {
         centerPivot.setPosition(constants.CENTER);
         leftPivot.setPosition(1-constants.GROUND);
         rightPivot.setPosition(constants.GROUND);
+        state = "READY";
+
+    }
+
+    private void reset(double angle) {
+        state = "RESET";
+        centerPivot.setPosition(constants.CENTER);
+        leftPivot.setPosition(1-angle);
+        rightPivot.setPosition(angle);
         state = "READY";
 
     }
