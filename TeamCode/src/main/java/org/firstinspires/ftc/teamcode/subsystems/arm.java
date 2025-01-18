@@ -17,6 +17,8 @@ public class arm {
 
     private String state;
 
+    private boolean isBusy = false;
+
     public arm() {state = "PRESET";}
 
     public void init(HardwareMap map) {
@@ -33,24 +35,34 @@ public class arm {
         switch (preset) {
             case GROUND:
                 state = "GROUND";
-                leftPivot.setPosition(1-constants.GROUND);
+                leftPivot.setPosition(1 - constants.GROUND);
                 rightPivot.setPosition(constants.GROUND);
                 break;
             case VERTICAL:
+                center();
                 state = "VERTICAL";
-                leftPivot.setPosition(1-constants.VERTICAL);
+                leftPivot.setPosition(1 - constants.VERTICAL);
                 rightPivot.setPosition(constants.VERTICAL);
                 break;
             case PRE_PICKUP:
                 state = "PRE_PICKUP";
-                leftPivot.setPosition(1-constants.PRE_PICKUP);
+                leftPivot.setPosition(1 - constants.PRE_PICKUP);
                 rightPivot.setPosition(constants.PRE_PICKUP);
+                break;
+            case BACK:
+                state = "BACK";
+                leftPivot.setPosition(1 - constants.BACK);
+                rightPivot.setPosition(constants.BACK);
+                break;
+            case CENTER:
+                center();
                 break;
             case RESET:
                 reset();
                 break;
         }
     }
+
 
     public void setCustomRotation(int direction) {
         state = "CUSTOM ROTATION";
@@ -91,6 +103,10 @@ public class arm {
         rightPivot.setPosition(constants.GROUND);
         state = "READY";
 
+    }
+
+    private void center() {
+        centerPivot.setPosition(constants.CENTER);
     }
 
     private void reset(double angle) {

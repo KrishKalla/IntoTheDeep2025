@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.OpModes.Auto;
 
 import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 
 import com.pedropathing.follower.Follower;
@@ -20,18 +21,27 @@ import org.firstinspires.ftc.teamcode.subsystems.slides;
 
 import org.firstinspires.ftc.teamcode.OpModes.Auto.AConstants.BlueRight;
 import org.firstinspires.ftc.teamcode.OpModes.Auto.AConstants.BLUE_RIGHT;
+import org.firstinspires.ftc.teamcode.utility.constants;
+
+import java.util.Optional;
 
 import pedroPathing.constants.FConstants;
 import pedroPathing.constants.LConstants;
 
 
-
+@Config
 @Autonomous(name = "BlueRight", group = "Qual-1")
 public class blueRight extends OpMode{
 
+    private long timeout = 100;
+
+    public static int s = 0;
+
     //Pedro Pathing Business
     private Follower follower;
-    private Timer pathTimer, actionTimer, opModeTimer;
+    private Timer pathTimer = new Timer();
+    private Timer actionTimer = new Timer();
+    private Timer opModeTimer = new Timer();
 
     private BLUE_RIGHT state;
 
@@ -54,46 +64,43 @@ public class blueRight extends OpMode{
         scorePreload = follower.pathBuilder()
                 .addPath(new Path(new BezierLine(BlueRight.navigateToPreload, BlueRight.scorePreload)))
                 .setConstantHeadingInterpolation(Math.toRadians(180))
-                .addPath(new Path(new BezierLine(BlueRight.scorePreload, BlueRight.releasePreload)))
-                .setConstantHeadingInterpolation(Math.toRadians(180))
-                .addPath(new Path(new BezierLine(BlueRight.releasePreload, BlueRight.retreatFromPreload)))
-                .setConstantHeadingInterpolation(Math.toRadians(180))
                 .build();
 
         pushSample1 = follower.pathBuilder()
-                .addPath(new Path(new BezierCurve(BlueRight.retreatFromPreload, BlueRight.navigateToSample1Control1, BlueRight.NavigateToSample1Control2,BlueRight.navigateToSample1)))
+                .addPath(new Path(new BezierCurve(BlueRight.scorePreload, BlueRight.navigateToSample1Control1, BlueRight.NavigateToSample1Control2,BlueRight.navigateToSample1)))
                 .setConstantHeadingInterpolation(Math.toRadians(180))
-                .addPath(new Path(new BezierLine(BlueRight.navigateToPreload, BlueRight.pushSample1)))
-                .setConstantHeadingInterpolation(180)
                 .build();
+//                .addPath(new Path(new BezierLine(BlueRight.navigateToSample1, BlueRight.pushSample1)))
+//                .setConstantHeadingInterpolation(Math.toRadians(180))
+//                .build();
 
         pushSample2 = follower.pathBuilder()
                 .addPath(new Path(new BezierCurve(BlueRight.pushSample1, BlueRight.navigateToSample2Control1, BlueRight.navigateToSample2)))
-                .setConstantHeadingInterpolation(180)
+                .setConstantHeadingInterpolation(Math.toRadians(180))
                 .addPath(new Path(new BezierLine(BlueRight.navigateToSample2, BlueRight.pushSample2)))
-                .setConstantHeadingInterpolation(180)
+                .setConstantHeadingInterpolation(Math.toRadians(180))
                 .build();
 
         navigateToPickup = follower.pathBuilder()
-                .addPath(new Path(new BezierCurve(BlueRight.pushSample2, BlueRight.navigateToPickupControl1, BlueRight.navigateToPickup)))
-                .setConstantHeadingInterpolation(180)
+                .addPath(new Path(new BezierCurve(BlueRight.scorePreload, BlueRight.navigateToPickupControl1, BlueRight.navigateToPickup)))
+                .setConstantHeadingInterpolation(Math.toRadians(180))
                 .build();
 
         navigateToScore = follower.pathBuilder()
                 .addPath(new Path(new BezierCurve(BlueRight.navigateToPickup, BlueRight.navigateToScoreControl1, BlueRight.navigateToScore)))
-                .setConstantHeadingInterpolation(180)
+                .setConstantHeadingInterpolation(Math.toRadians(180))
+                .setZeroPowerAccelerationMultiplier(0.75)
+                .setPathEndVelocityConstraint(0)
                 .build();
 
         score = follower.pathBuilder()
                 .addPath(new Path(new BezierLine(BlueRight.navigateToScore, BlueRight.score)))
                 .setConstantHeadingInterpolation(Math.toRadians(180))
-                .addPath(new Path(new BezierLine(BlueRight.score, BlueRight.release)))
-                .setConstantHeadingInterpolation(Math.toRadians(180))
                 .build();
 
         park = follower.pathBuilder()
-                .addPath(new Path(new BezierCurve(BlueRight.release, BlueRight.parkControl1, BlueRight.parkControl2, BlueRight.park)))
-                .setConstantHeadingInterpolation(180)
+                .addPath(new Path(new BezierCurve(BlueRight.score, BlueRight.navigateToPickupControl1, BlueRight.navigateToPickup)))
+                .setConstantHeadingInterpolation(Math.toRadians(180))
                 .build();
     }
 
@@ -101,69 +108,111 @@ public class blueRight extends OpMode{
     public void pathUpdater() {
         switch (state) {
             case INIT:
-                pathTimer = new Timer();
-
-                Constants.setConstants(FConstants.class, LConstants.class);
-                follower = new Follower(hardwareMap);
-                follower.setStartingPose(BlueRight.startPose);
-
+                claw.preset(constants.CLAW.CLOSED);
+                claw.preset(constants.CLAW.ROTATED);
                 break;
 
             case START:
                 state = BLUE_RIGHT.PRELOAD;
+                claw.preset(constants.CLAW.ROTATED);
+                slides.setHeight(1300);
+                arm.preset(constants.ARM.BACK);
                 break;
 
             case PRELOAD:
                 if (!follower.isBusy()) {
                     follower.followPath(navigateToPreload, true);
-                    setNextPath(BLUE_RIGHT.PRELOAD);
+                    setNextPath(BLUE_RIGHT.PRE_SCORE);
+                }
+                break;
+
+            case PRE_SCORE:
+                if (!follower.isBusy()) {
+                    slides.setHeight(1750);
+                    setNextPath(BLUE_RIGHT.SCORE_PRELOAD);
                 }
                 break;
 
             case SCORE_PRELOAD:
-                if (!follower.isBusy()) {
+                if (!follower.isBusy() && !slides.isBusy()) {
                     follower.followPath(scorePreload, true);
-                    setNextPath(BLUE_RIGHT.PUSH_1);
-                }
-                break;
-
-            case PUSH_1:
-                if (!follower.isBusy()) {
-                    follower.followPath(pushSample1, true);
-                    setNextPath(BLUE_RIGHT.PUSH_2);
-                }
-                break;
-
-            case PUSH_2:
-                if (!follower.isBusy()) {
-                    follower.followPath(pushSample2, true);
                     setNextPath(BLUE_RIGHT.PICK_1);
                 }
                 break;
+//
+//            case PUSH_1:
+//                if (!follower.isBusy()) {
+//                    follower.followPath(pushSample1, true);
+//                    setNextPath(BLUE_RIGHT.PUSH_2);
+//                }
+//                break;
+//
+//            case PUSH_2:
+//                if (!follower.isBusy()) {
+//                    follower.followPath(pushSample2, true);
+//                    setNextPath(BLUE_RIGHT.PICK_1);
+//                }
+//                break;
 
             case PICK_1:
-                if (!follower.isBusy()) {
+                if (!follower.isBusy() && !slides.isBusy()) {
+                    claw.preset(constants.CLAW.OPEN);
                     follower.followPath(navigateToPickup, true);
-                    setNextPath(BLUE_RIGHT.READY);
+                    slides.setHeight(1300);
+                    arm.preset(constants.ARM.PRE_PICKUP);
+//                    setNextPath(BLUE_RIGHT.RESET_TIMER);
+                }
+                break;
+
+            case RESET_TIMER:
+                 actionTimer.resetTimer();
+                if (!follower.isBusy()) {
+                    setNextPath(BLUE_RIGHT.UNLATCH);
+                }
+                break;
+
+            case UNLATCH:
+                if (!follower.isBusy()){
+                    slides.setHeight(1135);
+                    if (actionTimer.getElapsedTimeSeconds() > 4.5) {
+                        arm.preset(constants.ARM.GROUND);
+                    }
+                    if (actionTimer.getElapsedTimeSeconds() > 6.5) {
+                        claw.preset(constants.CLAW.CLOSED);
+                    }
+                    if (actionTimer.getElapsedTimeSeconds() > 10.5) {
+                        hslides.unlatch();
+                        arm.preset(constants.ARM.PRE_PICKUP);
+                    }
+                    if (actionTimer.getElapsedTimeSeconds() > 12.5) {
+                        setNextPath(BLUE_RIGHT.READY);
+                    }
+
                 }
                 break;
 
             case READY:
-                if (!follower.isBusy()) {
+                if (!follower.isBusy() && !slides.isBusy()) {
+                    arm.preset(constants.ARM.BACK);
                     follower.followPath(navigateToScore, true);
+                    hslides.preset(constants.HSLIDES.RETRACTED);
+                    slides.setHeight(1300);
                     setNextPath(BLUE_RIGHT.SCORE);
                 }
                 break;
 
             case SCORE:
                 if (!follower.isBusy()) {
+                    slides.setHeight(1750);
                     follower.followPath(score, true);
                     setNextPath(BLUE_RIGHT.PARK);
                 }
+                stop();
                 break;
 
             case PARK:
-                if (!follower.isBusy()) {
+                if (!follower.isBusy() && !slides.isBusy()) {
+                    claw.preset(constants.CLAW.OPEN);
                     follower.followPath(park, true);
                     setNextPath(BLUE_RIGHT.IDLE);
                 }
@@ -178,7 +227,11 @@ public class blueRight extends OpMode{
 
     @Override
     public void init() {
-        setNextPath(BLUE_RIGHT.INIT);
+        pathTimer = new Timer();
+
+        Constants.setConstants(FConstants.class, LConstants.class);
+        follower = new Follower(hardwareMap);
+        follower.setStartingPose(BlueRight.startPose);
 
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
@@ -195,6 +248,11 @@ public class blueRight extends OpMode{
         telemetry.addLine("blueRight Autonomous Initiated... Waiting For Start...");
         telemetry.addData("blueRight State: ", state);
         telemetry.update();
+
+        buildPaths();
+
+        setNextPath(BLUE_RIGHT.INIT);
+        pathUpdater();
     }
 
     @Override
@@ -221,6 +279,9 @@ public class blueRight extends OpMode{
     private void infoUpdater() {
         telemetry.addData("Path State: ", state);
         telemetry.addData("Position: ", follower.getPose().toString());
+        telemetry.addLine(claw.getClawState());
+        telemetry.addData("Slide Height: ", slides.getHeight());
+        telemetry.addData("Action Timer: ", actionTimer.getElapsedTimeSeconds());
         telemetry.update();
     }
 

@@ -17,6 +17,7 @@ import pedroPathing.constants.LConstants;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.subsystems.hslides;
 import org.firstinspires.ftc.teamcode.subsystems.claw;
@@ -119,6 +120,11 @@ public class tele extends OpMode{
             slides.setCustomHeight(-1);
         }
 
+        if (gamepad1.left_bumper) {
+            slides.left.setTargetPosition(slides.left.getCurrentPosition() - 30);
+            slides.left.setPower(constants.MAX_SLIDE_SPEED);
+        }
+
         if (gamepad1.right_bumper && gamepad1.left_bumper) {
             slides.preset(constants.VSLIDES.RESET);
         }
@@ -135,11 +141,11 @@ public class tele extends OpMode{
             claw.preset(constants.CLAW.ROTATED);
         }
 
-        if (gamepad2.square) {
+        if (gamepad2.circle) {
             claw.preset(constants.CLAW.OPEN);
         }
 
-        if (gamepad2.circle) {
+        if (gamepad2.square) {
             claw.preset(constants.CLAW.CLOSED);
         }
 
@@ -161,6 +167,7 @@ public class tele extends OpMode{
             arm.preset(constants.ARM.GROUND);
         }
         if (gamepad2. dpad_up) {
+            arm.preset(constants.ARM.RESET);
             arm.preset(constants.ARM.VERTICAL);
         }
         if (gamepad2.dpad_right) {
@@ -189,12 +196,12 @@ public class tele extends OpMode{
             hslides.preset(constants.HSLIDES.RETRACTED);
         }
 
-        if (gamepad2.right_bumper) {
-            hslides.crudeSetCustomExtension(1);
+        if (gamepad2.left_stick_y > 0.3) {
+            hslides.crudeSetCustomExtension(-1);
         }
 
-        if (gamepad2.left_bumper) {
-            hslides.crudeSetCustomExtension(-1);
+        if (gamepad2.left_stick_y < -0.3) {
+            hslides.crudeSetCustomExtension(1);
         }
 
         if (gamepad2.options) {
@@ -222,6 +229,8 @@ public class tele extends OpMode{
         telemetry.addLine("---------SLIDES--------");
         telemetry.addLine(slides.toString());
         telemetry.addData("Slide Speed: ", slides.getSpeed());
+        telemetry.addData("Right Slide: ", slides.getRightHeight());
+        telemetry.addData("Left Slide: ", slides.getLeftHeight());
         telemetry.addLine(hslides.toString());
         telemetry.addData("hslide state: ", hslides.getState());
         telemetry.addLine("----------CLAW---------");

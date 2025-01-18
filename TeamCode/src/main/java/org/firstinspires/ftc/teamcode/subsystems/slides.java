@@ -11,10 +11,12 @@ import org.firstinspires.ftc.teamcode.utility.constants;
 public class slides {
     private String state = null;
 
-    private DcMotorEx left;
+    public DcMotorEx left;
     private DcMotorEx right;
 
     private double speed;
+
+    private int target;
 
 
 
@@ -98,6 +100,7 @@ public class slides {
     }
 
     public void setHeight(int target) {
+        this.target = target;
 //        speed = getVariableSpeed(target);
         speed = constants.MAX_SLIDE_SPEED;
 
@@ -112,6 +115,12 @@ public class slides {
 
     }
 
+    public boolean isBusy() {
+        if (Math.abs(target - getHeight()) > 15){
+            return true;
+        }
+        return false;
+    }
 
     public void setCustomHeight(int direction) {
         state = "CUSTOM";
