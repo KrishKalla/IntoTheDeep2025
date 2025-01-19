@@ -19,6 +19,7 @@ public class AConstants {
         RESET_TIMER,
         UNLATCH,
         READY,
+        PRE,
         SCORE,
         PARK,
         IDLE
@@ -31,7 +32,7 @@ public class AConstants {
         public static final Point navigateToPreload = new Point(36.75, 68, Point.CARTESIAN);
         public static final Point navigateToPreloadControl1 = new Point(16, 55, Point.CARTESIAN);
 
-        public static final Point scorePreload = new Point(34.5, 68, Point.CARTESIAN);
+        public static final Point scorePreload = new Point(34.55, 68, Point.CARTESIAN);
         public static final Point releasePreload = new Point(37, 68, Point.CARTESIAN);
         public static final Point retreatFromPreload = new Point(30, 68, Point.CARTESIAN);
 
@@ -46,17 +47,17 @@ public class AConstants {
 
         public static final Point pushSample2 = new Point(16, 12, Point.CARTESIAN);
 
-        public static final Point navigateToPickup = new Point(21.10, 27.75, Point.CARTESIAN);
+        public static final Point navigateToPickup = new Point(19.2, 23.5, Point.CARTESIAN);
         public static final Point navigateToPickupControl1 = new Point(17, 66, Point.CARTESIAN);
 
-        public static final Point navigateToScore = new Point(38.5, 76, Point.CARTESIAN);
+        public static final Point navigateToScore = new Point(39, 76, Point.CARTESIAN);
         public static final Point navigateToScoreControl1 = new Point(7, 66, Point.CARTESIAN);
 
-        public static final Point score = new Point(36.2, 76, Point.CARTESIAN);
+        public static final Point score = new Point(34.5, 76, Point.CARTESIAN);
         public static final Point release = new Point(41, 68, Point.CARTESIAN);
 
-            public static final Point park = new Point(68, 48, Point.CARTESIAN);
-        public static final Point parkControl1 = new Point(12, 0, Point.CARTESIAN);
+        public static final Point park = new Point(10.2, 17, Point.CARTESIAN);
+        public static final Point parkControl1 = new Point(17, 66, Point.CARTESIAN);
         public static final Point parkControl2 = new Point(68, 0, Point.CARTESIAN);
     }
 

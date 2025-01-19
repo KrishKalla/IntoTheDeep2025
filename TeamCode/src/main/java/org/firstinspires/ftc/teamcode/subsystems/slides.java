@@ -126,10 +126,10 @@ public class slides {
         state = "CUSTOM";
         int step = 0;
         if (direction == 1) {
-            step = 5;
+            step = 30;
         }
         else if (direction == -1) {
-            step = -5;
+            step = -30;
         }
         int target = getHeight() + step;
 

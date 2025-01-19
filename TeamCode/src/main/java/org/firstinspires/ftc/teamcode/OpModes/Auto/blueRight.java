@@ -99,7 +99,7 @@ public class blueRight extends OpMode{
                 .build();
 
         park = follower.pathBuilder()
-                .addPath(new Path(new BezierCurve(BlueRight.score, BlueRight.navigateToPickupControl1, BlueRight.navigateToPickup)))
+                .addPath(new Path(new BezierCurve(BlueRight.score, BlueRight.parkControl1, BlueRight.park)))
                 .setConstantHeadingInterpolation(Math.toRadians(180))
                 .build();
     }
@@ -128,7 +128,7 @@ public class blueRight extends OpMode{
 
             case PRE_SCORE:
                 if (!follower.isBusy()) {
-                    slides.setHeight(1750);
+                    slides.setHeight(1780);
                     setNextPath(BLUE_RIGHT.SCORE_PRELOAD);
                 }
                 break;
@@ -160,7 +160,7 @@ public class blueRight extends OpMode{
                     follower.followPath(navigateToPickup, true);
                     slides.setHeight(1300);
                     arm.preset(constants.ARM.PRE_PICKUP);
-//                    setNextPath(BLUE_RIGHT.RESET_TIMER);
+                    setNextPath(BLUE_RIGHT.RESET_TIMER);
                 }
                 break;
 
@@ -173,9 +173,8 @@ public class blueRight extends OpMode{
 
             case UNLATCH:
                 if (!follower.isBusy()){
-                    slides.setHeight(1135);
+                    slides.setHeight(1180);
                     if (actionTimer.getElapsedTimeSeconds() > 4.5) {
-                        arm.preset(constants.ARM.GROUND);
                     }
                     if (actionTimer.getElapsedTimeSeconds() > 6.5) {
                         claw.preset(constants.CLAW.CLOSED);
@@ -197,22 +196,28 @@ public class blueRight extends OpMode{
                     follower.followPath(navigateToScore, true);
                     hslides.preset(constants.HSLIDES.RETRACTED);
                     slides.setHeight(1300);
+                    setNextPath(BLUE_RIGHT.PRE);
+                }
+                break;
+
+            case PRE:
+                if (!follower.isBusy() && !slides.isBusy()) {
+                    slides.setHeight(1780);
                     setNextPath(BLUE_RIGHT.SCORE);
                 }
                 break;
 
             case SCORE:
-                if (!follower.isBusy()) {
-                    slides.setHeight(1750);
+                if (!follower.isBusy() && !slides.isBusy()) {
                     follower.followPath(score, true);
                     setNextPath(BLUE_RIGHT.PARK);
                 }
-                stop();
                 break;
 
             case PARK:
                 if (!follower.isBusy() && !slides.isBusy()) {
                     claw.preset(constants.CLAW.OPEN);
+                    slides.preset(constants.VSLIDES.BASE);
                     follower.followPath(park, true);
                     setNextPath(BLUE_RIGHT.IDLE);
                 }
