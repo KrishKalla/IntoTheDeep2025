@@ -33,7 +33,9 @@ public class constants {
     public enum ARM {
         GROUND, //dpad_down
         PRE_PICKUP,
-        VERTICAL, //dpad_up
+        VERTICAL,
+        BACK,
+        CENTER,//dpad_up
         RESET //dpad_left
     }
 
@@ -68,21 +70,22 @@ public class constants {
     public static int HIGH_BASKET = 2900;
     public static int LOW_RUNG = 1200;
     public static int HIGH_RUNG = 2500;
-    public static double MAX_SLIDE_SPEED = 0.3;
+    public static double MAX_SLIDE_SPEED = 0.8;
 
     //arm constants
-    public static double GROUND = 0.04;
+    public static double GROUND = 0.01;
     public static double PRE_PICKUP = 0.07;
     public static double VERTICAL = 0.575;
+    public static double BACK = 0.99;
 
-    public static double INIT = 0.835;
-    public static double CENTER = 0.485;
+    public static double INIT = 0.765;
+    public static double CENTER = 0.525;
     public static double ARM_STEP = 0.0065;
 
     //claw constants
     //claw positions
-    public static double OPEN = .45;
-    public static double CLOSED = 0.15;
+    public static double OPEN = 0.15;
+    public static double CLOSED = 0.5;
     //claw rotations
     public static double STRAIGHT = 0;
     public static double ROTATED = 0.5;

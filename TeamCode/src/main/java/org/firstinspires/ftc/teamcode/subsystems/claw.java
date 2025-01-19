@@ -64,6 +64,10 @@ public class claw {
         step = 0;
     }
 
+    public void setCustom(double target){
+        claw.setPosition(target);
+    }
+
     public double getClawPosition() {
         return claw.getPosition();
     }
