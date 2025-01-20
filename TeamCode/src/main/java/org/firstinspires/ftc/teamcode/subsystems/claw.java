@@ -76,7 +76,7 @@ public class claw {
         return clawState;
     }
 
-    public double getRotatorPosition() {
+    public double getWristPosition() {
         return wrist.getPosition();
     }
 
