@@ -9,6 +9,7 @@ import com.pedropathing.pathgen.BezierCurve;
 import com.pedropathing.pathgen.BezierLine;
 import com.pedropathing.pathgen.Path;
 import com.pedropathing.pathgen.PathChain;
+import com.pedropathing.pathgen.Point;
 import com.pedropathing.util.Constants;
 import com.pedropathing.util.Timer;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -33,13 +34,15 @@ import pedroPathing.constants.LConstants;
 @Config
 public class rightRunnable extends OpMode {
 
-    private RIGHT_RUNNABLE state;
+    private RIGHT_RUNNABLE currentState;
+    private RIGHT_RUNNABLE nextState;
     public static int configState = 0;
+    private int count = 0;
 
     private final Map<RIGHT_RUNNABLE, Integer> stateMap = new HashMap<>();
     private final Map<Integer, RIGHT_RUNNABLE> map = new HashMap<>();
 
-    private PathChain navigateToPreload, scorePreload, pushSample1, pushSample2, navigateToPickup, navigateToScore, score, park;
+    private PathChain navigateToPreload, scorePreload, unloadPreload, pushSample1, pushSample2, navigateToPickup, navigateToScore, score, scoreToPickup, unlatch, park;
 
     private Follower follower;
     private Timer pathTimer;
@@ -56,14 +59,16 @@ public class rightRunnable extends OpMode {
     public void buildPaths() {
         navigateToPreload = follower.pathBuilder()
                 .addPath(new Path(new BezierCurve(RightRunnable.startPoint, RightRunnable.preloadControl1, RightRunnable.navigateToPreload)))
-                .setConstantHeadingInterpolation(180)
+                .setConstantHeadingInterpolation(Math.toRadians(180))
+                .setZeroPowerAccelerationMultiplier(0.85)
+                .setPathEndVelocityConstraint(15)
                 .addParametricCallback(0, new Runnable() {
                     @Override
                     public void run() {
                         slides.setHeight(1300);
                     }
                 })
-                .addParametricCallback(0.4, new Runnable() {
+                .addParametricCallback(0.2, new Runnable() {
                     @Override
                     public void run() {
                         arm.preset(constants.ARM.BACK);
@@ -73,30 +78,29 @@ public class rightRunnable extends OpMode {
 
         scorePreload = follower.pathBuilder()
                 .addPath(new Path(new BezierLine(RightRunnable.navigateToPreload, RightRunnable.scorePreload)))
-                .setConstantHeadingInterpolation(180)
-                .addTemporalCallback(0.5, new Runnable() {
+                .setConstantHeadingInterpolation(Math.toRadians(180))
+                .setPathEndTimeoutConstraint(1000)
+                .addTemporalCallback(0.25, new Runnable() {
                     @Override
                     public void run() {
-                        slides.setHeight(1780);
+                        slides.setHeight(1938);
                     }
                 })
-                .addTemporalCallback(1, new Runnable() {
-                    @Override
-                    public void run() {
-                        hslides.preset(constants.HSLIDES.HALF);
-                    }
-                })
-                .setPathEndTimeoutConstraint(1.5)
+                .build();
+
+        unloadPreload = follower.pathBuilder()
+                .addPath(new Path(new BezierLine(new Point(follower.getPose()), new Point(32, 66))))
+                .setConstantHeadingInterpolation(Math.toRadians(180))
+                .setPathEndTimeoutConstraint(1000)
                 .build();
 
         pushSample1 = follower.pathBuilder()
-                .addPath(new Path(new BezierCurve(RightRunnable.scorePreload, RightRunnable.navigateToPushSample1Control1, RightRunnable.navigateToPushSample1Control2, RightRunnable.navigateToPushSample1)))
-                .setConstantHeadingInterpolation(180)
+                .addPath(new Path(new BezierCurve(RightRunnable.navigateToPreload, RightRunnable.navigateToPushSample1Control1, RightRunnable.navigateToPushSample1Control2, RightRunnable.navigateToPushSample1)))
+                .setConstantHeadingInterpolation(Math.toRadians(180))
                 .addParametricCallback(0, new Runnable() {
                     @Override
                     public void run() {
                         claw.preset(constants.CLAW.OPEN);
-                        hslides.preset(constants.HSLIDES.RETRACTED);
                     }
                 })
                 .addParametricCallback(0.2, new Runnable() {
@@ -108,80 +112,100 @@ public class rightRunnable extends OpMode {
                 .addParametricCallback(0.4, new Runnable() {
                     @Override
                     public void run() {
+                        arm.preset(constants.ARM.VERTICAL);
+                    }
+                })
+                .addParametricCallback(0.7, new Runnable() {
+                    @Override
+                    public void run() {
                         arm.preset(constants.ARM.PRE_PICKUP);
                     }
                 })
                 .addPath(new Path(new BezierCurve(RightRunnable.navigateToPushSample1,RightRunnable.lineUpToPushSample1Control1, RightRunnable.lineUpToPushSample1)))
-                .setConstantHeadingInterpolation(180)
+                .setConstantHeadingInterpolation(Math.toRadians(180))
                 .addPath(new Path(new BezierLine(RightRunnable.lineUpToPushSample1, RightRunnable.PushSample1)))
-                .setConstantHeadingInterpolation(180)
+                .setConstantHeadingInterpolation(Math.toRadians(180))
                 .build();
 
         pushSample2 = follower.pathBuilder()
                 .addPath(new Path(new BezierCurve(RightRunnable.PushSample1, RightRunnable.navigateToPushSample2Control1, RightRunnable.navigateToPushSample2)))
-                .setConstantHeadingInterpolation(180)
+                .setConstantHeadingInterpolation(Math.toRadians(180))
                 .addPath(new Path(new BezierLine(RightRunnable.navigateToPushSample2, RightRunnable.PushSample2)))
-                .setConstantHeadingInterpolation(180)
+                .setConstantHeadingInterpolation(Math.toRadians(180))
                 .build();
 
         navigateToPickup = follower.pathBuilder()
-                .addPath(new Path(new BezierLine(RightRunnable.PushSample2, RightRunnable.pickup)))
-                .setConstantHeadingInterpolation(180)
-                .addTemporalCallback(3.5, new Runnable() {
+                .addPath(new Path(new BezierLine(RightRunnable.PushSample1, RightRunnable.pickup)))
+                .setConstantHeadingInterpolation(Math.toRadians(180))
+                .addTemporalCallback(0, new Runnable() {
                     @Override
                     public void run() {
-                        slides.setHeight(1180);
-                    }
-                })
-                .addTemporalCallback(4, new Runnable() {
-                    @Override
-                    public void run() {
-                        claw.preset(constants.CLAW.CLOSED);
-                    }
-                })
-                .addTemporalCallback(4.25, new Runnable() {
-                    @Override
-                    public void run() {
-                        hslides.unlatch();
+                        slides.setHeight(1200);
+                        arm.preset(constants.ARM.PRE_PICKUP);
                     }
                 })
                 .build();
 
         navigateToScore = follower.pathBuilder()
             .addPath(new Path(new BezierCurve(RightRunnable.pickup, RightRunnable.navigateToScoreControl1, RightRunnable.navigateToScore)))
-            .addParametricCallback(0, new Runnable() {
-                @Override
-                public void run() {
-                    slides.setHeight(1300);
-                }
-            })
-            .addParametricCallback(0.25, new Runnable() {
-                @Override
-                public void run() {
-                    arm.preset(constants.ARM.BACK);
-                }
-            })
-            .build();
-
-        score = follower.pathBuilder()
-                .addPath(new Path(new BezierLine(RightRunnable.navigateToScore, RightRunnable.score)))
-                .addTemporalCallback(0.5, new Runnable() {
+            .setConstantHeadingInterpolation(Math.toRadians(180))
+                .setZeroPowerAccelerationMultiplier(0.85)
+                .setPathEndVelocityConstraint(15)
+                .addParametricCallback(0, new Runnable() {
                     @Override
                     public void run() {
-                        slides.setHeight(1780);
+                        slides.setHeight(1300);
+                        arm.preset(constants.ARM.BACK);
                     }
                 })
-                .addTemporalCallback(1, new Runnable() {
+                .addParametricCallback(0.2, new Runnable() {
                     @Override
                     public void run() {
-                        hslides.preset(constants.HSLIDES.HALF);
+                        hslides.preset(constants.HSLIDES.RETRACTED);
                     }
                 })
-                .setPathEndTimeoutConstraint(1.5)
                 .build();
 
+        score = follower.pathBuilder()
+                .addPath(new Path(new BezierLine(RightRunnable.navigateToScore, new Point(38.5, 66+10*(count), Point.CARTESIAN))))
+                .setConstantHeadingInterpolation(Math.toRadians(180))
+                .setPathEndTimeoutConstraint(1500)
+                .addTemporalCallback(0.25, new Runnable() {
+                    @Override
+                    public void run() {
+                        slides.setHeight(1850);
+                    }
+                })
+                .build();
+
+        unlatch = follower.pathBuilder()
+                .addPath(new Path(new BezierLine(new Point(follower.getPose()), new Point(32, 66 + 10*count, Point.CARTESIAN))))
+                .setConstantHeadingInterpolation(Math.toRadians(180))
+                .setPathEndTimeoutConstraint(1000)
+                .build();
+
+        scoreToPickup = follower.pathBuilder()
+                .addPath(new Path(new BezierCurve(new Point(32, 66+10*count, Point.CARTESIAN), RightRunnable.navigateToScoreControl1, RightRunnable.pickup)))
+                .setConstantHeadingInterpolation(Math.toRadians(180))
+                .addParametricCallback(0, new Runnable() {
+                    @Override
+                    public void run() {
+                        claw.preset(constants.CLAW.OPEN);
+                    }
+                })
+                .addParametricCallback(0.4, new Runnable() {
+                    @Override
+                    public void run() {
+                        slides.setHeight(1180);
+                        arm.preset(constants.ARM.PRE_PICKUP);
+                    }
+                })
+                .build();
+
+
         park = follower.pathBuilder()
-                .addPath(new Path(new BezierCurve(RightRunnable.score, RightRunnable.navigateToParkControl1, RightRunnable.navigateToPark)))
+                .addPath(new Path(new BezierCurve(new Point(follower.getPose()), RightRunnable.navigateToParkControl1, RightRunnable.navigateToPark)))
+                .setConstantHeadingInterpolation(Math.toRadians(180))
                 .addParametricCallback(0, new Runnable() {
                     @Override
                     public void run() {
@@ -208,51 +232,69 @@ public class rightRunnable extends OpMode {
 
 
     public void pathUpdater() {
-        switch (state){
+        switch (nextState){
             case INIT:
+                currentState = RIGHT_RUNNABLE.INIT;
                 claw.preset(constants.CLAW.CLOSED);
                 break;
 
             case START:
-                state = RIGHT_RUNNABLE.NAVIGATE_TO_PRELOAD;
+                currentState = RIGHT_RUNNABLE.START;
+                nextState = RIGHT_RUNNABLE.NAVIGATE_TO_PRELOAD;
                 break;
 
             case NAVIGATE_TO_PRELOAD:
                 if (!follower.isBusy()) {
+                    currentState = RIGHT_RUNNABLE.NAVIGATE_TO_SCORE;
                     follower.followPath(navigateToPreload);
                     setNextPath(RIGHT_RUNNABLE.SCORE_PRELOAD);
                 }
+                break;
 
             case SCORE_PRELOAD:
                 if (!follower.isBusy()) {
+                    currentState = RIGHT_RUNNABLE.SCORE_PRELOAD;
                     follower.followPath(scorePreload, true);
+                    setNextPath(RIGHT_RUNNABLE.UNLOAD_PRELOAD);
+                }
+                break;
+
+            case UNLOAD_PRELOAD:
+                if (!follower.isBusy() || pathTimer.getElapsedTimeSeconds() > 1) {
+                    currentState = RIGHT_RUNNABLE.UNLOAD_PRELOAD;
+                    follower.followPath(unloadPreload);
                     setNextPath(RIGHT_RUNNABLE.PUSH_1);
                 }
                 break;
 
             case PUSH_1:
-                if (!follower.isBusy()) {
-                    follower.followPath(pushSample1);
-                    setNextPath(RIGHT_RUNNABLE.PUSH_2);
-                }
-                break;
-
-            case PUSH_2:
-                if (!follower.isBusy()) {
-                    follower.followPath(pushSample2);
+                if (!follower.isBusy() || pathTimer.getElapsedTimeSeconds() > 1) {
+                    claw.preset(constants.CLAW.OPEN);
+                    currentState = RIGHT_RUNNABLE.PUSH_1;
+                    follower.followPath(pushSample1, true);
                     setNextPath(RIGHT_RUNNABLE.PICKUP);
                 }
                 break;
 
             case PICKUP:
                 if (!follower.isBusy()) {
+                    currentState = RIGHT_RUNNABLE.PICKUP;
                     follower.followPath(navigateToPickup, true);
                     setNextPath(RIGHT_RUNNABLE.NAVIGATE_TO_SCORE);
                 }
                 break;
 
             case NAVIGATE_TO_SCORE:
-                if (!follower.isBusy()) {
+                if (pathTimer.getElapsedTimeSeconds() > 2.25 + 2.5*count){
+                    arm.preset(constants.ARM.GROUND);
+                }
+                if (pathTimer.getElapsedTimeSeconds() > 2.5 + 2.5*count) {
+                    claw.preset(constants.CLAW.CLOSED);
+                    hslides.preset(constants.HSLIDES.HALF);
+                }
+                if (!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 3 + 2.5*count) {
+                    count++;
+                    currentState = RIGHT_RUNNABLE.NAVIGATE_TO_SCORE;
                     follower.followPath(navigateToScore);
                     setNextPath(RIGHT_RUNNABLE.SCORE);
                 }
@@ -260,13 +302,35 @@ public class rightRunnable extends OpMode {
 
             case SCORE:
                 if (!follower.isBusy()) {
+                    currentState = RIGHT_RUNNABLE.SCORE;
                     follower.followPath(score, true);
-                    setNextPath(RIGHT_RUNNABLE.PARK);
+                    setNextPath(RIGHT_RUNNABLE.UNLATCH);
                 }
                 break;
 
+            case SCORE_TO_PICKUP:
+                if (!follower.isBusy()) {
+                    currentState = RIGHT_RUNNABLE.SCORE_TO_PICKUP;
+                    follower.followPath(scoreToPickup);
+                    setNextPath(RIGHT_RUNNABLE.NAVIGATE_TO_SCORE);
+                }
+                break;
+
+            case UNLATCH:
+                if (!follower.isBusy() || pathTimer.getElapsedTimeSeconds() > 1.25) {
+                    currentState = RIGHT_RUNNABLE.UNLATCH;
+                    follower.followPath(unlatch, true);
+                    if (count < 2){
+                        setNextPath(RIGHT_RUNNABLE.SCORE_TO_PICKUP);
+                    }
+                    else {
+                        setNextPath(RIGHT_RUNNABLE.PARK);
+                    }
+                }
+
             case PARK:
                 if (!follower.isBusy()) {
+                    currentState = RIGHT_RUNNABLE.PARK;
                     follower.followPath(park, true);
                     setNextPath(RIGHT_RUNNABLE.IDLE);
                 }
@@ -274,6 +338,7 @@ public class rightRunnable extends OpMode {
 
             case IDLE:
                 if (!follower.isBusy()) {
+                    currentState = RIGHT_RUNNABLE.IDLE;
                     stop();
                 }
 
@@ -281,7 +346,7 @@ public class rightRunnable extends OpMode {
     }
 
     public void setNextPath(AConstants.RIGHT_RUNNABLE next) {
-        state = next;
+        nextState = next;
         pathTimer.resetTimer();
         actionTimer.resetTimer();
     }
@@ -289,13 +354,16 @@ public class rightRunnable extends OpMode {
 
     @Override
     public void init() {
+
+        Follower.drawOnDashboard = true;
+
         pathTimer = new Timer();
         opModeTimer = new Timer();
         actionTimer = new Timer();
 
         Constants.setConstants(FConstants.class, LConstants.class);
         follower = new Follower(hardwareMap);
-        follower.setStartingPose(AConstants.BlueRight.startPose);
+        follower.setStartingPose(RightRunnable.startPose);
 
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
@@ -310,10 +378,10 @@ public class rightRunnable extends OpMode {
         arm.init(hardwareMap);
 
         telemetry.addLine("blueRight Autonomous Initiated... Waiting For Start...");
-        telemetry.addData("blueRight State: ", state);
+        telemetry.addData("Right State: ", currentState);
         telemetry.update();
 
-
+        buildPaths();
 
 
         stateMap.put(RIGHT_RUNNABLE.INIT, 0);
@@ -363,7 +431,8 @@ public class rightRunnable extends OpMode {
 
     private void infoUpdater() {
         telemetry.addData("OpMode Timer: ", opModeTimer.getElapsedTimeSeconds());
-        telemetry.addData("Path State: ", state);
+        telemetry.addData("Path State: ", currentState);
+        telemetry.addData("Is Follower Busy? ", follower.isBusy() ?"yes" : "no");
         telemetry.addData("Path Timer: ", pathTimer.getElapsedTimeSeconds());
         telemetry.addData("Field Position: ", follower.getPose().toString());
         telemetry.addLine();

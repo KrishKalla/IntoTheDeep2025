@@ -101,8 +101,8 @@ public class hslides {
     }
 
     public void unlatch(){
-        leftServo.setPosition(constants.pivot_left_retracted + 4*constants.CRUDE_STEP);
-        rightServo.setPosition(constants.pivot_right_retracted - 4*constants.CRUDE_STEP);
+        leftServo.setPosition(constants.pivot_left_retracted - 7*constants.CRUDE_STEP);
+        rightServo.setPosition(constants.pivot_right_retracted + 7*constants.CRUDE_STEP);
     }
 
     public String getState() {
