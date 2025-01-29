@@ -10,7 +10,7 @@ import org.firstinspires.ftc.teamcode.utility.constants;
 public class hslides {
     private String state = "INIT";
     private final double cutoff = constants.cutoff;
-    private double x;
+    private double x = constants.i;
 
     private Servo leftServo;
     private Servo rightServo;
@@ -19,8 +19,8 @@ public class hslides {
     }
 
     public void init(HardwareMap map) {
-        leftServo = map.get(Servo.class, "left");
-        rightServo = map.get(Servo.class, "right");
+        leftServo = map.get(Servo.class, "extendL");
+        rightServo = map.get(Servo.class, "extendR");
 
         reset();
         state = "INIT";
@@ -39,6 +39,11 @@ public class hslides {
                 rightServo.setPosition(constants.pivot_right_retracted);
                 state = "RETRACTED";
                 break;
+            case HALF:
+                leftServo.setPosition((constants.pivot_left_retracted + constants.pivot_left_extended)/2);
+                rightServo.setPosition((constants.pivot_right_retracted + constants.pivot_right_extended)/2);
+                state = "HALF";
+                break;
             case RESET:
                 reset();
                 break;
@@ -47,17 +52,17 @@ public class hslides {
 
     //Theta calculation based on x
     private double calculate(double x){
-        return 90 - Math.acos(((x+constants.i)/2)/constants.length);
+        return (Math.PI/2 - Math.acos(((x+constants.i)/2)/constants.length)) * 1/(Math.PI);
     }
 
     public void setCustomExtension(int direction) {
         double step = 0;
         if (direction == 1) {
-            step = 2;
+            step = 0.25;
             setExtension(x + step);
         }
         else if (direction == -1) {
-            step = -2;
+            step = -0.25;
             setExtension(x + step);
         }
 
@@ -68,14 +73,41 @@ public class hslides {
             state = "INVALID";
         }
         else {
-            double theta = calculate(x);
+            this.x = x;
+            double theta = calculate(this.x);
             leftServo.setPosition(theta);
-            rightServo.setPosition(180 - theta);
+            rightServo.setPosition(1 - theta);
             state = "CUSTOM";
         }
     }
 
+    public void crudeSetCustomExtension(int direction) {
+        double step = 0;
+        if (direction == 1) {
+            step = constants.CRUDE_STEP;
 
+        }
+        if (direction == -1) {
+            step = -constants.CRUDE_STEP;
+        }
+
+        if (leftServo.getPosition() + step < constants.pivot_left_retracted || leftServo.getPosition() + step > constants.pivot_left_extended || rightServo.getPosition() - step > constants.pivot_right_retracted || rightServo.getPosition() - step < constants.pivot_right_extended) {
+            state = "INVALID";
+        }
+        else {
+            leftServo.setPosition(leftServo.getPosition() + step);
+            rightServo.setPosition(rightServo.getPosition() - step);
+        }
+    }
+
+    public void unlatch(){
+        leftServo.setPosition(constants.pivot_left_retracted - 7*constants.CRUDE_STEP);
+        rightServo.setPosition(constants.pivot_right_retracted + 7*constants.CRUDE_STEP);
+    }
+
+    public String getState() {
+        return state;
+    }
     @NonNull
     @Override
     public String toString() {

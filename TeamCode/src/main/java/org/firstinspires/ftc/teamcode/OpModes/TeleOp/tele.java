@@ -17,6 +17,7 @@ import pedroPathing.constants.LConstants;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.subsystems.hslides;
 import org.firstinspires.ftc.teamcode.subsystems.claw;
@@ -47,10 +48,10 @@ public class tele extends OpMode{
 
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
-        slides = new slides();
-        claw = new claw();
-        hslides = new hslides();
         arm = new arm();
+        claw = new claw();
+        slides = new slides();
+        hslides = new hslides();
 
         slides.init(hardwareMap);
         claw.init(hardwareMap);
@@ -73,12 +74,14 @@ public class tele extends OpMode{
 
     @Override
     public void start() {
+
         follower.startTeleopDrive();
+
     }
 
     @Override
     public void loop() {
-        follower.setTeleOpMovementVectors(-gamepad1.left_stick_y, -gamepad1.left_stick_x, -gamepad1.right_stick_x, false);
+        follower.setTeleOpMovementVectors(-gamepad1.left_stick_y, -gamepad1.left_stick_x, -gamepad1.right_stick_x, true);
         follower.update();
 
         //region Controller 1 Inputs
@@ -95,14 +98,14 @@ public class tele extends OpMode{
             slides.preset(constants.VSLIDES.HIGH_BASKET);
         }
 
-        if (gamepad1.cross) {
+        if (gamepad1.square) {
             slides.preset(constants.VSLIDES.LOW_BAR);
         }
 
         if (gamepad1.triangle) {
             slides.preset(constants.VSLIDES.HIGH_BAR);
         }
-        if (gamepad1.square) {
+        if (gamepad1.cross) {
             slides.preset(constants.VSLIDES.LOW_RUNG);
         }
         if (gamepad1.circle) {
@@ -115,6 +118,11 @@ public class tele extends OpMode{
 
         if (gamepad1.left_trigger > 0.3) {
             slides.setCustomHeight(-1);
+        }
+
+        if (gamepad1.left_bumper) {
+            slides.left.setTargetPosition(slides.left.getCurrentPosition() - 30);
+            slides.left.setPower(constants.MAX_SLIDE_SPEED);
         }
 
         if (gamepad1.right_bumper && gamepad1.left_bumper) {
@@ -133,11 +141,11 @@ public class tele extends OpMode{
             claw.preset(constants.CLAW.ROTATED);
         }
 
-        if (gamepad2.square) {
+        if (gamepad2.circle) {
             claw.preset(constants.CLAW.OPEN);
         }
 
-        if (gamepad2.circle) {
+        if (gamepad2.square) {
             claw.preset(constants.CLAW.CLOSED);
         }
 
@@ -159,11 +167,16 @@ public class tele extends OpMode{
             arm.preset(constants.ARM.GROUND);
         }
         if (gamepad2. dpad_up) {
+            arm.preset(constants.ARM.RESET);
             arm.preset(constants.ARM.VERTICAL);
+        }
+        if (gamepad2.dpad_right) {
+            arm.preset(constants.ARM.PRE_PICKUP);
         }
         if (gamepad2. dpad_left) {
             arm.preset(constants.ARM.RESET);
         }
+
 
         if (gamepad2.left_stick_x > 0.3) {
             arm.setCustomRotation(1);
@@ -183,12 +196,12 @@ public class tele extends OpMode{
             hslides.preset(constants.HSLIDES.RETRACTED);
         }
 
-        if (gamepad2.right_bumper) {
-            hslides.setCustomExtension(1);
+        if (gamepad2.left_stick_y > 0.3) {
+            hslides.crudeSetCustomExtension(-1);
         }
 
-        if (gamepad2.left_bumper) {
-            hslides.setCustomExtension(-1);
+        if (gamepad2.left_stick_y < -0.3) {
+            hslides.crudeSetCustomExtension(1);
         }
 
         if (gamepad2.options) {
@@ -215,7 +228,11 @@ public class tele extends OpMode{
         telemetry.addData("Heading: ", Math.toDegrees(follower.getPose().getHeading()));
         telemetry.addLine("---------SLIDES--------");
         telemetry.addLine(slides.toString());
+        telemetry.addData("Slide Speed: ", slides.getSpeed());
+        telemetry.addData("Right Slide: ", slides.getRightHeight());
+        telemetry.addData("Left Slide: ", slides.getLeftHeight());
         telemetry.addLine(hslides.toString());
+        telemetry.addData("hslide state: ", hslides.getState());
         telemetry.addLine("----------CLAW---------");
         telemetry.addLine(claw.toString());
         telemetry.addLine(arm.toString());

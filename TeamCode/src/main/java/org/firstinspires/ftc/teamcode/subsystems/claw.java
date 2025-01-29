@@ -9,17 +9,17 @@ import org.firstinspires.ftc.teamcode.utility.constants;
 
 public class claw {
     private Servo claw;
-    private Servo rotator;
+    private Servo wrist;
 
     private String clawState;
-    private String rotatorState;
+    private String wristState;
 
     public claw() {
         clawState = "PRESET";}
 
     public void init(HardwareMap map) {
-        claw = map.get(Servo.class, "claw");
-        rotator = map.get(Servo.class, "rotator");
+        claw = map.get(Servo.class, "hand");
+        wrist = map.get(Servo.class, "wrist");
 
         reset();
     }
@@ -27,12 +27,12 @@ public class claw {
     public void preset(constants.CLAW preset) {
         switch (preset) {
             case STRAIGHT:
-                rotator.setPosition(constants.STRAIGHT);
-                rotatorState = "STRAIGHT";
+                wrist.setPosition(constants.STRAIGHT);
+                wristState = "STRAIGHT";
                 break;
             case ROTATED:
-                rotator.setPosition(constants.ROTATED);
-                rotatorState = "ROTATED";
+                wrist.setPosition(constants.ROTATED);
+                wristState = "ROTATED";
                 break;
             case OPEN:
                 claw.setPosition(constants.OPEN);
@@ -48,20 +48,24 @@ public class claw {
     }
 
     public void setCustomRotation(int direction) {
-        rotatorState = "CUSTOM";
+        wristState = "CUSTOM";
         double step = 0;
         if (direction == -1) {
-            step = -1;
+            step = constants.WRIST_STEP;
         }
         else if (direction == 1) {
-            step = 1;
+            step = -constants.WRIST_STEP;
         }
 
-        double target = rotator.getPosition() + step;
+        double target = wrist.getPosition() + step;
 
-        rotator.setPosition(target);
+        wrist.setPosition(target);
 
         step = 0;
+    }
+
+    public void setCustom(double target){
+        claw.setPosition(target);
     }
 
     public double getClawPosition() {
@@ -72,25 +76,25 @@ public class claw {
         return clawState;
     }
 
-    public double getRotatorPosition() {
-        return rotator.getPosition();
+    public double getWristPosition() {
+        return wrist.getPosition();
     }
 
-    public String getRotatorState() {
-        return rotatorState;
+    public String getWristState() {
+        return wristState;
     }
 
     @Override
     @NonNull
     public String toString() {
-        return "Claw Pos: " + claw.getPosition() + ", Rotator Pos: " + rotator.getPosition();
+        return "Claw Pos: " + claw.getPosition() + ", Rotator Pos: " + wrist.getPosition();
     }
 
     private void reset() {
         clawState = "RESET";
         claw.setPosition(constants.OPEN);
-        rotator.setPosition(constants.STRAIGHT);
+        wrist.setPosition(constants.STRAIGHT);
         clawState = "OPEN";
-        rotatorState = "STRAIGHT";
+        wristState = "STRAIGHT";
     }
 }

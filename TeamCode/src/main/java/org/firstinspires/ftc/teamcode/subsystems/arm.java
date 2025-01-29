@@ -8,6 +8,8 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.utility.constants;
 
+import java.util.Objects;
+
 public class arm {
     private Servo leftPivot;
     private Servo rightPivot;
@@ -15,29 +17,45 @@ public class arm {
 
     private String state;
 
+    private boolean isBusy = false;
+
     public arm() {state = "PRESET";}
 
     public void init(HardwareMap map) {
         state = "INIT";
 
-        leftPivot = map.get(Servo.class, "leftpivot");
-        rightPivot = map.get(Servo.class, "rightpivot");
-        centerPivot = map.get(Servo.class, "centerpivot");
+        leftPivot = map.get(Servo.class, "shoulderL");
+        rightPivot = map.get(Servo.class, "shoulderR");
+        centerPivot = map.get(Servo.class, "elbow");
 
-        reset();
+        reset(constants.INIT);
     }
 
     public void preset(constants.ARM preset) {
         switch (preset) {
             case GROUND:
                 state = "GROUND";
-                leftPivot.setPosition(constants.GROUND);
+                leftPivot.setPosition(1 - constants.GROUND);
                 rightPivot.setPosition(constants.GROUND);
                 break;
             case VERTICAL:
+                center();
                 state = "VERTICAL";
-                leftPivot.setPosition(constants.VERTICAL);
+                leftPivot.setPosition(1 - constants.VERTICAL);
                 rightPivot.setPosition(constants.VERTICAL);
+                break;
+            case PRE_PICKUP:
+                state = "PRE_PICKUP";
+                leftPivot.setPosition(1 - constants.PRE_PICKUP);
+                rightPivot.setPosition(constants.PRE_PICKUP);
+                break;
+            case BACK:
+                state = "BACK";
+                leftPivot.setPosition(1 - constants.BACK);
+                rightPivot.setPosition(constants.BACK);
+                break;
+            case CENTER:
+                center();
                 break;
             case RESET:
                 reset();
@@ -45,14 +63,15 @@ public class arm {
         }
     }
 
+
     public void setCustomRotation(int direction) {
         state = "CUSTOM ROTATION";
         double step = 0;
         if (direction == 1) {
-            step = 2;
+            step = constants.ARM_STEP;
         }
         else if (direction == -1) {
-            step = -2;
+            step = -constants.ARM_STEP;
         }
 
         double target = centerPivot.getPosition() + step;
@@ -79,9 +98,23 @@ public class arm {
 
     private void reset() {
         state = "RESET";
-        leftPivot.setPosition(constants.GROUND);
-        rightPivot.setPosition(constants.GROUND);
         centerPivot.setPosition(constants.CENTER);
+        leftPivot.setPosition(1-constants.GROUND);
+        rightPivot.setPosition(constants.GROUND);
         state = "READY";
+
+    }
+
+    private void center() {
+        centerPivot.setPosition(constants.CENTER);
+    }
+
+    private void reset(double angle) {
+        state = "RESET";
+        centerPivot.setPosition(constants.CENTER);
+        leftPivot.setPosition(1-angle);
+        rightPivot.setPosition(angle);
+        state = "READY";
+
     }
 }
