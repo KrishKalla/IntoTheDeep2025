@@ -15,7 +15,8 @@ public class constants {
 
     public enum HSLIDES {
         EXTENDED, //trigger right
-        RETRACTED, //trigger left
+        RETRACTED,
+        HALF,//trigger left
         RESET
     }
 
@@ -48,11 +49,11 @@ public class constants {
     }
 
     //set servo positions for max extension and retraction
-    public static double pivot_left_extended = 0.25;
-    public static double pivot_right_extended = 0.57;
+    public static double pivot_left_extended = 0.3;
+    public static double pivot_right_extended = 0.54;
 
-    public static double pivot_left_retracted = 0.05;
-    public static double pivot_right_retracted = 0.79;
+    public static double pivot_left_retracted = 0.0;
+    public static double pivot_right_retracted = 0.84;
     public static double CRUDE_STEP = 0.007;
 
     //initial distance of pivot
@@ -87,8 +88,8 @@ public class constants {
     public static double OPEN = 0.15;
     public static double CLOSED = 0.5;
     //claw rotations
-    public static double STRAIGHT = 0;
-    public static double ROTATED = 0.5;
+    public static double STRAIGHT = 0.5;
+    public static double ROTATED = 0;
     public static double WRIST_STEP = 0.025;
 
 
