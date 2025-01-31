@@ -1,0 +1,96 @@
+package org.firstinspires.ftc.teamcode.subsystems;
+import androidx.annotation.NonNull;
+
+import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.Servo;
+
+import org.firstinspires.ftc.teamcode.utility.constants;
+
+import java.util.Objects;
+public class intake {
+    private Servo right;
+    private Servo left;
+    private CRServo cr_right;
+    private CRServo cr_left;
+
+    private String state;
+
+    public intake() {state = "PRESET";}
+
+    public void init(HardwareMap map) {
+        state = "INIT";
+        left = map.get(Servo.class, "intakeL");
+        right = map.get(Servo.class, "intakeR");
+        cr_left = map.get(CRServo.class, "intakeLCR");
+        cr_right = map.get(CRServo.class, "intakeRCR");
+        customPivot(constants.INIT_PIVOT);
+    }
+
+    public void preset(constants.INTAKE preset) {
+        switch (preset) {
+            case GROUND:
+                state = "GROUND";
+                left.setPosition(1 - constants.GROUND);
+                right.setPosition(constants.GROUND);
+                break;
+            case PRE_PICKUP:
+                state = "PRE_PICKUP";
+                left.setPosition(1 - constants.PRE_PICKUP);
+                right.setPosition(constants.PRE_PICKUP);
+                break;
+            case TRANSFER:
+                state = "TRANSFER";
+                left.setPosition(1-constants.TRANSFER);
+                right.setPosition(constants.TRANSFER);
+                break;
+            case RETRACTED:
+                state = "RETRACTED";
+                left.setPosition(1-constants.RETRACTED);
+                right.setPosition(constants.RETRACTED);
+                break;
+            case PUSHOUT:
+                cr_right.setDirection(DcMotorSimple.Direction.REVERSE);
+                cr_right.setPower(1.0);
+                cr_left.setDirection(DcMotorSimple.Direction.REVERSE);
+                cr_left.setPower(1.0);
+                state = "PUSHOUT";
+                break;
+            case TAKEIN:
+                cr_right.setDirection(DcMotorSimple.Direction.FORWARD);
+                cr_right.setPower(1.0);
+                cr_left.setDirection(DcMotorSimple.Direction.FORWARD);
+                cr_left.setPower(1.0);
+                state = "TAKEIN";
+                break;
+            case OFF:
+                state = "OFF";
+                cr_left.setPower(0.0);
+                cr_right.setPower(0.0);
+                break;
+            case RESET:
+                reset();
+                break;
+        }
+    }
+
+    public String toString() {
+        return "LPIVOT pos: " + left.getPosition() + "RPIVOT pos: " + right.getPosition() + "CRLEFT DIR: " + cr_left.getDirection() + "CRLEFT POWER: " + cr_left.getPower() + "CRRIGHT DIR: "  +cr_right.getDirection() + "CRRIGHT POWER: " + cr_right.getPower();
+    }
+
+    private void customPivot(double angle_piv) {
+        state = "RESET";
+        left.setPosition(1-angle_piv);
+        right.setPosition(angle_piv);
+        state = "GROUND";
+    }
+
+    private void reset() {
+        cr_right.setDirection(DcMotorSimple.Direction.REVERSE);
+        state = "RESET";
+        left.setPosition(1-constants.GROUND_PIVOT);
+        right.setPosition(constants.GROUND_PIVOT);
+        state = "GROUND";
+    }
+}
