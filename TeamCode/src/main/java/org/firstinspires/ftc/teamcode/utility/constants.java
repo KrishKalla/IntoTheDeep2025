@@ -31,6 +31,20 @@ public class constants {
         RESET //
     }
 
+    public enum INTAKE {
+        // CR SERVOS:
+        PUSHOUT, // push sample out
+        TAKEIN, // take sample in
+        OFF,
+        // PIVOT SERVOS
+        GROUND,
+        PRE_PICKUP,
+        TRANSFER,
+        RETRACTED,
+        // BOTH
+        RESET
+    }
+
     public enum ARM {
         GROUND, //dpad_down
         PRE_PICKUP,
@@ -92,5 +106,13 @@ public class constants {
     public static double ROTATED = 0;
     public static double WRIST_STEP = 0.025;
 
+    // pivot intake constants (update these)
+
+    public static double GROUND_PIVOT = 0;
+    public static double INIT_PIVOT = 0;
+
+    public static double TRANSFER = 0;
+
+    public static double RETRACTED = 0;
 
 }
