@@ -16,16 +16,17 @@ public class intake {
     private CRServo cr_left;
 
     private String state;
+    private String crState;
 
     public intake() {state = "PRESET";}
 
     public void init(HardwareMap map) {
-        state = "INIT";
         left = map.get(Servo.class, "intakeL");
         right = map.get(Servo.class, "intakeR");
         cr_left = map.get(CRServo.class, "intakeLCR");
         cr_right = map.get(CRServo.class, "intakeRCR");
-        customPivot(constants.INIT_PIVOT);
+
+        reset();
     }
 
     public void preset(constants.INTAKE preset) {
@@ -51,21 +52,21 @@ public class intake {
                 right.setPosition(constants.RETRACTED);
                 break;
             case PUSHOUT:
-                cr_right.setDirection(DcMotorSimple.Direction.REVERSE);
+                cr_right.setDirection(DcMotorSimple.Direction.FORWARD);
                 cr_right.setPower(1.0);
                 cr_left.setDirection(DcMotorSimple.Direction.REVERSE);
                 cr_left.setPower(1.0);
-                state = "PUSHOUT";
+                crState = "PUSHOUT";
                 break;
             case TAKEIN:
-                cr_right.setDirection(DcMotorSimple.Direction.FORWARD);
+                cr_right.setDirection(DcMotorSimple.Direction.REVERSE);
                 cr_right.setPower(1.0);
                 cr_left.setDirection(DcMotorSimple.Direction.FORWARD);
                 cr_left.setPower(1.0);
-                state = "TAKEIN";
+                crState = "TAKEIN";
                 break;
             case OFF:
-                state = "OFF";
+                crState = "OFF";
                 cr_left.setPower(0.0);
                 cr_right.setPower(0.0);
                 break;
@@ -75,6 +76,8 @@ public class intake {
         }
     }
 
+    @Override
+    @NonNull
     public String toString() {
         return "LPIVOT pos: " + left.getPosition() + "RPIVOT pos: " + right.getPosition() + "CRLEFT DIR: " + cr_left.getDirection() + "CRLEFT POWER: " + cr_left.getPower() + "CRRIGHT DIR: "  +cr_right.getDirection() + "CRRIGHT POWER: " + cr_right.getPower();
     }
@@ -87,10 +90,12 @@ public class intake {
     }
 
     private void reset() {
-        cr_right.setDirection(DcMotorSimple.Direction.REVERSE);
         state = "RESET";
-        left.setPosition(1-constants.GROUND_PIVOT);
-        right.setPosition(constants.GROUND_PIVOT);
-        state = "GROUND";
+        cr_right.setPower(0);
+        cr_left.setPower(0);
+        left.setPosition(1-constants.RETRACTED);
+        right.setPosition(constants.RETRACTED);
+        state = "RETRACTED";
+        crState = "OFF";
     }
 }

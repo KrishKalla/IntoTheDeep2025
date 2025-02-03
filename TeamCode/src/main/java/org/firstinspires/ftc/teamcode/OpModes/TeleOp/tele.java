@@ -26,7 +26,7 @@ import org.firstinspires.ftc.teamcode.subsystems.arm;
 
 import org.firstinspires.ftc.teamcode.utility.constants;
 
-@TeleOp(name = "TeleOp")
+@TeleOp(name = "TeleOp-Depricated")
 public class tele extends OpMode{
     //Pedro Pathing TeleOp Follower Business
     private Follower follower;

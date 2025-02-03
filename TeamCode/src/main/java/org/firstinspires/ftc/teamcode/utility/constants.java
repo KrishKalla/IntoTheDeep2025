@@ -62,6 +62,15 @@ public class constants {
         RESET
     }
 
+    public enum UPPERCLAW {
+        OPEN,
+        CLOSED,
+        TRANSFER,
+        BACK,
+        SPECIMEN,
+        RESET
+    }
+
     //set servo positions for max extension and retraction
     public static double pivot_left_extended = 0.3;
     public static double pivot_right_extended = 0.54;
@@ -107,12 +116,14 @@ public class constants {
     public static double WRIST_STEP = 0.025;
 
     // pivot intake constants (update these)
-
     public static double GROUND_PIVOT = 0;
     public static double INIT_PIVOT = 0;
-
     public static double TRANSFER = 0;
-
     public static double RETRACTED = 0;
+
+    //Upper Claw constants (open & close from claw positions)
+    public static double transfer = 0;
+    public static double back = 0;
+    public static double specimen = 0;
 
 }
