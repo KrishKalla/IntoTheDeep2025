@@ -97,10 +97,9 @@ public class constants {
     public static double MAX_SLIDE_SPEED = 0.8;
 
     //arm constants
-    public static double GROUND = 0.01;
-    public static double PRE_PICKUP = 0.07;
+    public static double GROUND = 0.235;
     public static double VERTICAL = 0.575;
-    public static double BACK = 0.99;
+    public static double BACK = 0;
 
     public static double INIT = 0.765;
     public static double CENTER = 0.525;
@@ -116,14 +115,15 @@ public class constants {
     public static double WRIST_STEP = 0.025;
 
     // pivot intake constants (update these)
-    public static double GROUND_PIVOT = 0;
-    public static double INIT_PIVOT = 0;
-    public static double TRANSFER = 0;
-    public static double RETRACTED = 0;
+    public static double GROUND_PIVOT = 0.235;
+    public static double PRE_PICKUP = 0.4;
+    public static double INIT_PIVOT = 1;
+    public static double TRANSFER = 0.735;
+    public static double RETRACTED = 1;
 
     //Upper Claw constants (open & close from claw positions)
-    public static double transfer = 0;
-    public static double back = 0;
-    public static double specimen = 0;
+    public static double transfer = 0.18;
+    public static double back = 1;
+    public static double specimen = 0.45;
 
 }

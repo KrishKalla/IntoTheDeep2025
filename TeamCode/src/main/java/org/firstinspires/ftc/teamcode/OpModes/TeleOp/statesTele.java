@@ -81,7 +81,7 @@ public class statesTele extends OpMode{
 
     @Override
     public void loop() {
-        follower.setTeleOpMovementVectors(-gamepad1.left_stick_y, -gamepad1.left_stick_x, -gamepad1.right_stick_x, true);
+        follower.setTeleOpMovementVectors(-gamepad1.left_stick_y, -prioitizedStrafe(), -gamepad1.right_stick_x, true);
         follower.update();
 
         //region Controller 1 Inputs
@@ -152,7 +152,35 @@ public class statesTele extends OpMode{
         }
 
         if (gamepad2.dpad_right) {
-            upperClaw.preset(constants.UPPERCLAW.TRANSFER);
+            Runnable transfer = new Runnable() {
+                @Override
+                public void run() {
+                    hslides.preset(constants.HSLIDES.RETRACTED);
+                    upperClaw.preset(constants.UPPERCLAW.OPEN);
+                    upperClaw.preset(constants.UPPERCLAW.TRANSFER);
+                    intake.preset(constants.INTAKE.TRANSFER);
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+                    upperClaw.preset(constants.UPPERCLAW.CLOSED);
+                    try {
+                        Thread.sleep(350);
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+                    upperClaw.preset(constants.UPPERCLAW.BACK);
+                    intake.preset(constants.INTAKE.PUSHOUT);
+                    try {
+                        Thread.sleep(200);
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            };
+            transfer.run();
+            prioitizedStrafe();
         }
 
 
@@ -233,10 +261,22 @@ public class statesTele extends OpMode{
         telemetry.addLine(hslides.toString());
         telemetry.addData("hslide state: ", hslides.getState());
         telemetry.addLine("----------CLAW---------");
-        telemetry.addLine(claw.toString());
-        telemetry.addLine(arm.toString());
+        telemetry.addLine(upperClaw.toString());
+        telemetry.addLine(intake.toString());
 
         telemetry.update();
+    }
+
+    public double prioitizedStrafe() {
+        if (Math.abs(gamepad1.left_stick_x) > 0.05){
+            return gamepad1.left_stick_x;
+        }
+        else if (Math.abs(gamepad2.left_stick_x) > 0.05) {
+            return gamepad2.right_stick_x;
+        }
+        else {
+            return gamepad1.left_stick_x;
+        }
     }
 
 }

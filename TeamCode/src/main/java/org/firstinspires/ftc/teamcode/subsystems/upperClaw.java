@@ -75,8 +75,8 @@ public class upperClaw {
     public void reset() {
         clawState = "RESET";
         claw.setPosition(constants.OPEN);
-        left.setPosition(constants.back);
-        right.setPosition(1-constants.back);
+        left.setPosition(1-constants.back);
+        right.setPosition(constants.back);
         clawState = "OPEN";
         pivotState = "BACK";
     }

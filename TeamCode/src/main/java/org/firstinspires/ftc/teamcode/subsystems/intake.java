@@ -21,10 +21,10 @@ public class intake {
     public intake() {state = "PRESET";}
 
     public void init(HardwareMap map) {
-        left = map.get(Servo.class, "intakeL");
-        right = map.get(Servo.class, "intakeR");
-        cr_left = map.get(CRServo.class, "intakeLCR");
-        cr_right = map.get(CRServo.class, "intakeRCR");
+        left = map.get(Servo.class, "shoulderL");
+        right = map.get(Servo.class, "shoulderR");
+        cr_left = map.get(CRServo.class, "intakeL");
+        cr_right = map.get(CRServo.class, "intakeR");
 
         reset();
     }
@@ -33,8 +33,8 @@ public class intake {
         switch (preset) {
             case GROUND:
                 state = "GROUND";
-                left.setPosition(1 - constants.GROUND);
-                right.setPosition(constants.GROUND);
+                left.setPosition(1 - constants.GROUND_PIVOT);
+                right.setPosition(constants.GROUND_PIVOT);
                 break;
             case PRE_PICKUP:
                 state = "PRE_PICKUP";
@@ -52,16 +52,16 @@ public class intake {
                 right.setPosition(constants.RETRACTED);
                 break;
             case PUSHOUT:
-                cr_right.setDirection(DcMotorSimple.Direction.FORWARD);
+                cr_right.setDirection(DcMotorSimple.Direction.REVERSE);
                 cr_right.setPower(1.0);
-                cr_left.setDirection(DcMotorSimple.Direction.REVERSE);
+                cr_left.setDirection(DcMotorSimple.Direction.FORWARD);
                 cr_left.setPower(1.0);
                 crState = "PUSHOUT";
                 break;
             case TAKEIN:
-                cr_right.setDirection(DcMotorSimple.Direction.REVERSE);
+                cr_right.setDirection(DcMotorSimple.Direction.FORWARD);
                 cr_right.setPower(1.0);
-                cr_left.setDirection(DcMotorSimple.Direction.FORWARD);
+                cr_left.setDirection(DcMotorSimple.Direction.REVERSE);
                 cr_left.setPower(1.0);
                 crState = "TAKEIN";
                 break;

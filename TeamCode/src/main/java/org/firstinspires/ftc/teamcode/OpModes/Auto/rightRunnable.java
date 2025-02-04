@@ -42,7 +42,7 @@ public class rightRunnable extends OpMode {
     private final Map<RIGHT_RUNNABLE, Integer> stateMap = new HashMap<>();
     private final Map<Integer, RIGHT_RUNNABLE> map = new HashMap<>();
 
-    private PathChain navigateToPreload, scorePreload, unloadPreload, pushSample1, pushSample2, navigateToPickup, navigateToScore, score, scoreToPickup, unlatch, park;
+    private PathChain navigateToPreload, scorePreload, unloadPreload, pushSample1, pushSample2, navigateToPickup, navigateToScore, score, scoreToPickup, navigateToScore2, unlatch, park;
 
     private Follower follower;
     private Timer pathTimer;
@@ -83,13 +83,13 @@ public class rightRunnable extends OpMode {
                 .addTemporalCallback(0.25, new Runnable() {
                     @Override
                     public void run() {
-                        slides.setHeight(1938);
+                        slides.setHeight(2028);
                     }
                 })
                 .build();
 
         unloadPreload = follower.pathBuilder()
-                .addPath(new Path(new BezierLine(new Point(follower.getPose()), new Point(32, 66))))
+                .addPath(new Path(new BezierLine(new Point(follower.getPose()), new Point(31, 66))))
                 .setConstantHeadingInterpolation(Math.toRadians(180))
                 .setPathEndTimeoutConstraint(1000)
                 .build();
@@ -106,7 +106,7 @@ public class rightRunnable extends OpMode {
                 .addParametricCallback(0.2, new Runnable() {
                     @Override
                     public void run() {
-                        slides.setHeight(1300);
+                        slides.setHeight(1350);
                     }
                 })
                 .addParametricCallback(0.4, new Runnable() {
@@ -123,6 +123,7 @@ public class rightRunnable extends OpMode {
                 })
                 .addPath(new Path(new BezierCurve(RightRunnable.navigateToPushSample1,RightRunnable.lineUpToPushSample1Control1, RightRunnable.lineUpToPushSample1)))
                 .setConstantHeadingInterpolation(Math.toRadians(180))
+                .setZeroPowerAccelerationMultiplier(0.75)
                 .addPath(new Path(new BezierLine(RightRunnable.lineUpToPushSample1, RightRunnable.PushSample1)))
                 .setConstantHeadingInterpolation(Math.toRadians(180))
                 .build();
@@ -167,13 +168,13 @@ public class rightRunnable extends OpMode {
                 .build();
 
         score = follower.pathBuilder()
-                .addPath(new Path(new BezierLine(RightRunnable.navigateToScore, new Point(38.5, 66+10*(count), Point.CARTESIAN))))
+                .addPath(new Path(new BezierLine(RightRunnable.navigateToScore, new Point(33.5, 66+10*(count), Point.CARTESIAN))))
                 .setConstantHeadingInterpolation(Math.toRadians(180))
                 .setPathEndTimeoutConstraint(1500)
                 .addTemporalCallback(0.25, new Runnable() {
                     @Override
                     public void run() {
-                        slides.setHeight(1850);
+                        slides.setHeight(2288);
                     }
                 })
                 .build();
@@ -193,7 +194,7 @@ public class rightRunnable extends OpMode {
                         claw.preset(constants.CLAW.OPEN);
                     }
                 })
-                .addParametricCallback(0.4, new Runnable() {
+                .addParametricCallback(0.2, new Runnable() {
                     @Override
                     public void run() {
                         slides.setHeight(1180);
@@ -201,6 +202,27 @@ public class rightRunnable extends OpMode {
                     }
                 })
                 .build();
+
+        navigateToScore2 = follower.pathBuilder()
+                .addPath(new Path(new BezierCurve(RightRunnable.pickup, RightRunnable.navigateToScoreControl1, RightRunnable.navigateToScore)))
+                .setConstantHeadingInterpolation(Math.toRadians(180))
+                .setZeroPowerAccelerationMultiplier(0.85)
+                .setPathEndVelocityConstraint(15)
+                .addParametricCallback(0, new Runnable() {
+                    @Override
+                    public void run() {
+                        slides.setHeight(1300);
+                        arm.preset(constants.ARM.BACK);
+                    }
+                })
+                .addParametricCallback(0.2, new Runnable() {
+                    @Override
+                    public void run() {
+                        hslides.preset(constants.HSLIDES.RETRACTED);
+                    }
+                })
+                .build();
+
 
 
         park = follower.pathBuilder()
@@ -286,10 +308,9 @@ public class rightRunnable extends OpMode {
 
             case NAVIGATE_TO_SCORE:
                 if (pathTimer.getElapsedTimeSeconds() > 2.25 + 2.5*count){
-                    arm.preset(constants.ARM.GROUND);
+                    claw.preset(constants.CLAW.CLOSED);
                 }
                 if (pathTimer.getElapsedTimeSeconds() > 2.5 + 2.5*count) {
-                    claw.preset(constants.CLAW.CLOSED);
                     hslides.preset(constants.HSLIDES.HALF);
                 }
                 if (!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 3 + 2.5*count) {
