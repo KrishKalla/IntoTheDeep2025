@@ -48,10 +48,15 @@ public class upperClaw {
                 right.setPosition(constants.back);
                 pivotState = "BACK";
                 break;
-            case SPECIMEN:
+            case SPECIMEN_ALIGN:
                 left.setPosition(1-constants.specimen);
                 right.setPosition(constants.specimen);
-                pivotState = "SPECIMEN";
+                pivotState = "SPECIMEN_ALIGN";
+                break;
+            case SPECIMEN_SCORE:
+                left.setPosition(1-constants.specimen_score);
+                right.setPosition(constants.specimen_score);
+                pivotState = "SPECIMEN_SCORE";
                 break;
             case RESET:
                 reset();

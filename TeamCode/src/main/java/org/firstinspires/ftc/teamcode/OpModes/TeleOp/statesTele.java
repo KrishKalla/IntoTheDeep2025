@@ -17,7 +17,6 @@ import pedroPathing.constants.LConstants;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
-import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.subsystems.hslides;
 import org.firstinspires.ftc.teamcode.subsystems.intake;
@@ -148,7 +147,37 @@ public class statesTele extends OpMode{
         }
 
         if (gamepad2.triangle) {
-            upperClaw.preset(constants.UPPERCLAW.SPECIMEN);
+            Runnable specimen_align = new Runnable() {
+                @Override
+                public void run() {
+                    upperClaw.preset(constants.UPPERCLAW.SPECIMEN_ALIGN);
+                    slides.preset(constants.VSLIDES.HIGH_BAR);
+                }
+            };
+            specimen_align.run();
+        }
+
+        if (gamepad2.right_stick_button) {
+            Runnable specimen_score = new Runnable() {
+                @Override
+                public void run() {
+                    upperClaw.preset(constants.UPPERCLAW.SPECIMEN_SCORE);
+                    try {
+                        Thread.sleep(500);
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+                    upperClaw.preset(constants.UPPERCLAW.OPEN);
+                    try {
+                        Thread.sleep(350);
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+                    upperClaw.preset(constants.UPPERCLAW.BACK);
+                    slides.preset(constants.VSLIDES.BASE);
+                }
+            };
+            specimen_score.run();
         }
 
         if (gamepad2.dpad_right) {
@@ -180,7 +209,6 @@ public class statesTele extends OpMode{
                 }
             };
             transfer.run();
-            prioitizedStrafe();
         }
 
 
@@ -271,7 +299,7 @@ public class statesTele extends OpMode{
         if (Math.abs(gamepad1.left_stick_x) > 0.05){
             return gamepad1.left_stick_x;
         }
-        else if (Math.abs(gamepad2.left_stick_x) > 0.05) {
+        else if (Math.abs(gamepad2.right_stick_x) > 0.05) {
             return gamepad2.right_stick_x;
         }
         else {

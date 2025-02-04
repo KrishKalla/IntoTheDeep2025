@@ -67,7 +67,8 @@ public class constants {
         CLOSED,
         TRANSFER,
         BACK,
-        SPECIMEN,
+        SPECIMEN_ALIGN,
+        SPECIMEN_SCORE,
         RESET
     }
 
@@ -125,5 +126,6 @@ public class constants {
     public static double transfer = 0.18;
     public static double back = 1;
     public static double specimen = 0.45;
+    public static double specimen_score = 0.5;
 
 }
