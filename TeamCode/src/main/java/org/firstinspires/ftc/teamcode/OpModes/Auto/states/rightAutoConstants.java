@@ -1,0 +1,78 @@
+package org.firstinspires.ftc.teamcode.OpModes.Auto.states;
+
+import com.acmerobotics.dashboard.config.Config;
+import com.pedropathing.localization.Pose;
+import com.pedropathing.pathgen.Point;
+
+@Config
+public class rightAutoConstants {
+
+    public static double ROBOT_LENGTH = 16.1417;
+    public static double ROBOT_WIDTH = 16.54;
+
+    public enum RIGHT {
+        INIT,
+        START,
+
+        NAVIGATE_PRELOAD,
+        SCORE_PRELOAD,
+
+        ALIGN_1,
+        PUSH_1,
+        ALIGN_2,
+        PUSH_2,
+
+        PICKUP_CACHE,
+        NAVIGATE_CACHE,
+        SCORE_CACHE,
+
+        PICKUP_1,
+        NAVIGATE_1,
+        SCORE_1,
+
+        PICKUP_2,
+        NAVIGATE_2,
+        SCORE_2,
+
+        PARK,
+
+        IDLE
+    }
+
+    public static final Pose startPose = new Pose(8.57, 63.73, 0);
+    public static final Point startPoint = new Point(startPose);
+
+
+    public static final Point navigatePreloadControl1 = new Point(20.000, 68.000, Point.CARTESIAN);
+    public static final Point navigatePreload = new Point(41.200, 68.000, Point.CARTESIAN);
+
+
+    public static final Point align1Control1 = new Point(20.000, 68.000, Point.CARTESIAN);
+    public static final Point align1Control2 = new Point(2.000, 24.000, Point.CARTESIAN);
+    public static final Point align1Control3 = new Point(49.054, 40.273, Point.CARTESIAN);
+    public static final Point align1Control4 = new Point(60.000, 40.000, Point.CARTESIAN);
+    public static final Point align1 = new Point(62.000, 24.000, Point.CARTESIAN);
+
+    public static final Point push1 = new Point(17.500, 24.000, Point.CARTESIAN);
+
+
+    public static final Point align2Control1 = new Point(62.000, 30.000, Point.CARTESIAN);
+    public static final Point align2 = new Point(62.000, 14.000, Point.CARTESIAN);
+
+    public static final Point push2 = new Point(17.500, 14.000, Point.CARTESIAN);
+
+
+    public static final Point pickup = new Point(8.570, 24.000, Point.CARTESIAN);
+
+
+    public static final Point navigateCacheControl1 = new Point(20.000, 70.000, Point.CARTESIAN);
+    public static final Point navigateCache = new Point(41.200, 70.000, Point.CARTESIAN);
+
+
+    public static final Point navigate1Control1 = new Point(20.000, 72.000, Point.CARTESIAN);
+    public static final Point navigate1 = new Point(41.200, 72.000, Point.CARTESIAN);
+
+
+    public static final  Point navigate2Control1 = new Point(20.000, 74.000, Point.CARTESIAN);
+    public static final Point navigate2 = new Point(41.200, 74.000, Point.CARTESIAN);
+}
