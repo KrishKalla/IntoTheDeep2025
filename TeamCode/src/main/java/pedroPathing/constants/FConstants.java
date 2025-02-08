@@ -20,13 +20,13 @@ public class FConstants {
         FollowerConstants.rightFrontMotorDirection = DcMotorSimple.Direction.FORWARD;
         FollowerConstants.rightRearMotorDirection = DcMotorSimple.Direction.FORWARD;
 
-        FollowerConstants.mass = 11.7;
+        FollowerConstants.mass = 12;
 
-        FollowerConstants.xMovement = 40;
-        FollowerConstants.yMovement = 40;
+        FollowerConstants.xMovement = 72;
+        FollowerConstants.yMovement = 54;
 
-        FollowerConstants.forwardZeroPowerAcceleration = -26.6551;
-        FollowerConstants.lateralZeroPowerAcceleration = -62.5218;
+        FollowerConstants.forwardZeroPowerAcceleration = -26;
+        FollowerConstants.lateralZeroPowerAcceleration = -69;
 
         FollowerConstants.translationalPIDFCoefficients.setCoefficients(0.135,0,0.01,0);
         FollowerConstants.useSecondaryTranslationalPID = false;

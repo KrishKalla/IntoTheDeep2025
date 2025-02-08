@@ -28,6 +28,15 @@ public class upperClaw {
         reset();
     }
 
+    public void init(HardwareMap map, boolean isAuto) {
+        claw = map.get(Servo.class, "upperClaw");
+        left = map.get(Servo.class, "upperL");
+        right = map.get(Servo.class, "upperR");
+        if (isAuto){
+           preset(constants.UPPERCLAW.AUTO_INIT);
+        }
+    }
+
     public void preset(constants.UPPERCLAW preset) {
         switch (preset) {
             case OPEN:
@@ -48,6 +57,11 @@ public class upperClaw {
                 right.setPosition(constants.back);
                 pivotState = "BACK";
                 break;
+            case SCORE:
+                left.setPosition(1-constants.score);
+                right.setPosition(constants.score);
+                pivotState = "SCORE";
+                break;
             case SPECIMEN_ALIGN:
                 left.setPosition(1-constants.specimen);
                 right.setPosition(constants.specimen);
@@ -57,6 +71,11 @@ public class upperClaw {
                 left.setPosition(1-constants.specimen_score);
                 right.setPosition(constants.specimen_score);
                 pivotState = "SPECIMEN_SCORE";
+                break;
+            case AUTO_INIT:
+                left.setPosition(1-constants.autoInit);
+                right.setPosition(constants.autoInit);
+                pivotState = "AUTO_INIT";
                 break;
             case RESET:
                 reset();

@@ -15,6 +15,8 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import pedroPathing.constants.FConstants;
 import pedroPathing.constants.LConstants;
 
+import com.pedropathing.util.Timer;
+
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 
@@ -87,14 +89,17 @@ public class statesTele extends OpMode{
         //region Slide Inputs
         if (gamepad1.dpad_down) {
             slides.preset(constants.VSLIDES.BASE);
+            upperClaw.preset(constants.UPPERCLAW.BACK);
         }
 
         if (gamepad1.dpad_left) {
             slides.preset(constants.VSLIDES.LOW_BASKET);
+            upperClaw.preset(constants.UPPERCLAW.SCORE);
         }
 
         if (gamepad1.dpad_up) {
             slides.preset(constants.VSLIDES.HIGH_BASKET);
+            upperClaw.preset(constants.UPPERCLAW.SCORE);
         }
 
         if (gamepad1.dpad_right) {
@@ -151,17 +156,30 @@ public class statesTele extends OpMode{
                 @Override
                 public void run() {
                     upperClaw.preset(constants.UPPERCLAW.SPECIMEN_ALIGN);
-                    slides.preset(constants.VSLIDES.HIGH_BAR);
+                    slides.preset(constants.VSLIDES.LOW_BAR);
                 }
             };
-            specimen_align.run();
+            Thread t = new Thread(specimen_align);
+            t.start();
         }
 
         if (gamepad2.right_stick_button) {
             Runnable specimen_score = new Runnable() {
                 @Override
                 public void run() {
+                    slides.setHeight(420);
+                    try {
+                        Thread.sleep(500);
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
                     upperClaw.preset(constants.UPPERCLAW.SPECIMEN_SCORE);
+                    try {
+                        Thread.sleep(350);
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+                    slides.preset(constants.VSLIDES.HIGH_BAR);
                     try {
                         Thread.sleep(500);
                     } catch (InterruptedException e) {
@@ -177,14 +195,15 @@ public class statesTele extends OpMode{
                     slides.preset(constants.VSLIDES.BASE);
                 }
             };
-            specimen_score.run();
+            Thread t = new Thread(specimen_score);
+            t.start();
         }
 
         if (gamepad2.dpad_right) {
             Runnable transfer = new Runnable() {
                 @Override
                 public void run() {
-                    hslides.preset(constants.HSLIDES.RETRACTED);
+                    hslides.preset(constants.HSLIDES.TRANSFER);
                     upperClaw.preset(constants.UPPERCLAW.OPEN);
                     upperClaw.preset(constants.UPPERCLAW.TRANSFER);
                     intake.preset(constants.INTAKE.TRANSFER);
@@ -199,16 +218,18 @@ public class statesTele extends OpMode{
                     } catch (InterruptedException e) {
                         throw new RuntimeException(e);
                     }
+                    Timer timer = new Timer();
                     upperClaw.preset(constants.UPPERCLAW.BACK);
-                    intake.preset(constants.INTAKE.PUSHOUT);
-                    try {
-                        Thread.sleep(200);
-                    } catch (InterruptedException e) {
-                        throw new RuntimeException(e);
+                    while (timer.getElapsedTimeSeconds() < 0.75){
+                        intake.preset(constants.INTAKE.PUSHOUT);
                     }
+                    hslides.preset(constants.HSLIDES.RETRACTED);
+                    intake.preset(constants.INTAKE.RETRACTED);
+                    intake.preset(constants.INTAKE.OFF);
                 }
             };
-            transfer.run();
+            Thread t = new Thread(transfer);
+            t.start();
         }
 
 

@@ -16,6 +16,7 @@ public class constants {
     public enum HSLIDES {
         EXTENDED, //trigger right
         RETRACTED,
+        TRANSFER,
         HALF,//trigger left
         RESET
     }
@@ -63,21 +64,26 @@ public class constants {
     }
 
     public enum UPPERCLAW {
+        AUTO_INIT,
         OPEN,
         CLOSED,
         TRANSFER,
         BACK,
+        SCORE,
         SPECIMEN_ALIGN,
         SPECIMEN_SCORE,
         RESET
     }
 
     //set servo positions for max extension and retraction
-    public static double pivot_left_extended = 0.3;
-    public static double pivot_right_extended = 0.54;
+    public static double pivot_left_extended = 0.32;
+    public static double pivot_right_extended = 0.68;
 
-    public static double pivot_left_retracted = 0.0;
-    public static double pivot_right_retracted = 0.84;
+    public static double pivot_left_retracted = 0.025;
+    public static double pivot_right_retracted = 0.975;
+
+    public static double pivot_left_transfer = 0.20;
+    public static double pivot_right_transfer = 0.80;
     public static double CRUDE_STEP = 0.007;
 
     //initial distance of pivot
@@ -87,10 +93,10 @@ public class constants {
     //max length of hslides
     public static double cutoff = 18.75;
 
-    //HSLIDE CONSTANTS
+    //VSLIDE CONSTANTS
     public static int BASE = 0;
-    public static int LOW_BAR = 50;
-    public static int HIGH_BAR = 970;
+    public static int LOW_BAR = 330;
+    public static int HIGH_BAR = 540;
     public static int LOW_BASKET = 1250;
     public static int HIGH_BASKET = 2900;
     public static int LOW_RUNG = 1200;
@@ -98,7 +104,7 @@ public class constants {
     public static double MAX_SLIDE_SPEED = 0.8;
 
     //arm constants
-    public static double GROUND = 0.235;
+    public static double GROUND = 0.2425;
     public static double VERTICAL = 0.575;
     public static double BACK = 0;
 
@@ -116,16 +122,18 @@ public class constants {
     public static double WRIST_STEP = 0.025;
 
     // pivot intake constants (update these)
-    public static double GROUND_PIVOT = 0.235;
+    public static double GROUND_PIVOT = 0.2725;
     public static double PRE_PICKUP = 0.4;
     public static double INIT_PIVOT = 1;
-    public static double TRANSFER = 0.735;
-    public static double RETRACTED = 1;
+    public static double TRANSFER = 0.85;
+    public static double RETRACTED = 0.925;
 
     //Upper Claw constants (open & close from claw positions)
-    public static double transfer = 0.18;
+    public static double transfer = 0.25;
+    public static double autoInit = 0.0;
     public static double back = 1;
-    public static double specimen = 0.45;
-    public static double specimen_score = 0.5;
+    public static double score = 0.85;
+    public static double specimen = 0.4;
+    public static double specimen_score = 0.65;
 
 }

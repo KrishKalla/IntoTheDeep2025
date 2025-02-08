@@ -44,6 +44,11 @@ public class hslides {
                 rightServo.setPosition((constants.pivot_right_retracted + constants.pivot_right_extended)/2);
                 state = "HALF";
                 break;
+            case TRANSFER:
+                leftServo.setPosition(constants.pivot_left_transfer);
+                rightServo.setPosition(constants.pivot_right_transfer);
+                state = "TRANSFER";
+                break;
             case RESET:
                 reset();
                 break;
