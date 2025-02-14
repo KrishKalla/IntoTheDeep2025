@@ -30,23 +30,23 @@ public class hslides {
         // replace below constants with constants in constants.java once we get them
         switch (preset) {
             case EXTENDED:
-                leftServo.setPosition(constants.pivot_left_extended);
-                rightServo.setPosition(constants.pivot_right_extended);
+                leftServo.setPosition(constants.pivotExtended);
+                rightServo.setPosition(1-constants.pivotExtended);
                 state = "EXTENDED";
                 break;
             case RETRACTED:
-                leftServo.setPosition(constants.pivot_left_retracted);
-                rightServo.setPosition(constants.pivot_right_retracted);
+                leftServo.setPosition(constants.pivotRetracted);
+                rightServo.setPosition(1-constants.pivotRetracted);
                 state = "RETRACTED";
                 break;
             case HALF:
-                leftServo.setPosition((constants.pivot_left_retracted + constants.pivot_left_extended)/2);
-                rightServo.setPosition((constants.pivot_right_retracted + constants.pivot_right_extended)/2);
+                leftServo.setPosition((constants.pivotRetracted + constants.pivotExtended)/2);
+                rightServo.setPosition(((1-constants.pivotRetracted) + (1- constants.pivotExtended))/2);
                 state = "HALF";
                 break;
             case TRANSFER:
-                leftServo.setPosition(constants.pivot_left_transfer);
-                rightServo.setPosition(constants.pivot_right_transfer);
+                leftServo.setPosition(constants.pivotTransfer);
+                rightServo.setPosition(1-constants.pivotTransfer);
                 state = "TRANSFER";
                 break;
             case RESET:
@@ -96,18 +96,19 @@ public class hslides {
             step = -constants.CRUDE_STEP;
         }
 
-        if (leftServo.getPosition() + step < constants.pivot_left_retracted || leftServo.getPosition() + step > constants.pivot_left_extended || rightServo.getPosition() - step > constants.pivot_right_retracted || rightServo.getPosition() - step < constants.pivot_right_extended) {
+        if (leftServo.getPosition() + step < constants.pivotRetracted || leftServo.getPosition() + step > constants.pivotExtended) {
             state = "INVALID";
         }
         else {
             leftServo.setPosition(leftServo.getPosition() + step);
             rightServo.setPosition(rightServo.getPosition() - step);
+            state = "CUSTOM";
         }
     }
 
     public void unlatch(){
-        leftServo.setPosition(constants.pivot_left_retracted - 7*constants.CRUDE_STEP);
-        rightServo.setPosition(constants.pivot_right_retracted + 7*constants.CRUDE_STEP);
+//        leftServo.setPosition(constants.pivot_left_retracted - 7*constants.CRUDE_STEP);
+//        rightServo.setPosition(constants.pivot_right_retracted + 7*constants.CRUDE_STEP);
     }
 
     public String getState() {
@@ -121,8 +122,8 @@ public class hslides {
 
     private void reset() {
         state = "INIT";
-        leftServo.setPosition(constants.pivot_left_retracted);
-        rightServo.setPosition(constants.pivot_right_retracted);
+        leftServo.setPosition((constants.pivotRetracted+0.015));
+        rightServo.setPosition(1-(constants.pivotRetracted+0.015));
         state = "READY";
     }
 }

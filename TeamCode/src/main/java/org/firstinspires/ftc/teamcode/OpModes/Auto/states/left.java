@@ -101,10 +101,12 @@ public class left extends OpMode{
     Runnable transfer = new Runnable() {
         @Override
         public void run() {
-            hslides.preset(constants.HSLIDES.RETRACTED);
-            upperClaw.preset(constants.UPPERCLAW.OPEN);
             upperClaw.preset(constants.UPPERCLAW.TRANSFER);
+            upperClaw.preset(constants.UPPERCLAW.OPEN);
             intake.preset(constants.INTAKE.TRANSFER);
+            intake.preset(constants.INTAKE.OFF);
+            hslides.preset(constants.HSLIDES.TRANSFER);
+//            slides.preset(constants.VSLIDES.HIGH_BASKET);
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
@@ -116,24 +118,34 @@ public class left extends OpMode{
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
-            upperClaw.preset(constants.UPPERCLAW.BACK);
-            intake.preset(constants.INTAKE.PUSHOUT);
-            try {
-                Thread.sleep(200);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
+            Timer timer = new Timer();
+            while (timer.getElapsedTimeSeconds() < 0.75){
+                intake.preset(constants.INTAKE.PUSHOUT);
+                upperClaw.preset(constants.UPPERCLAW.SCORE);
             }
+            slides.preset(constants.VSLIDES.HIGH_BASKET);
+            hslides.preset(constants.HSLIDES.RETRACTED);
+            intake.preset(constants.INTAKE.RETRACTED);
+            intake.preset(constants.INTAKE.OFF);
         }
     };
 
     Runnable pickup = new Runnable() {
         @Override
         public void run() {
-            Timer t = new Timer();
-            for (t.getElapsedTimeSeconds(); t.getElapsedTimeSeconds() < 3; t.getElapsedTimeSeconds()) {
-                intake.preset(constants.INTAKE.TAKEIN);
-                hslides.crudeSetCustomExtension(1);
+            Timer time = new Timer();
+            intake.preset(constants.INTAKE.GROUND);
+            try {
+                Thread.sleep(750);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
             }
+//            while(time.getElapsedTimeSeconds() < 2) {
+//                intake.preset(constants.INTAKE.TAKEIN);
+//                if (time.getElapsedTime()%50 == 0){
+//                    hslides.crudeSetCustomExtension(1);
+//                }
+//            }
         }
     };
 
@@ -157,6 +169,8 @@ public class left extends OpMode{
         public void run() {
             slides.preset(constants.VSLIDES.BASE);
             upperClaw.preset(constants.UPPERCLAW.BACK);
+            hslides.preset(constants.HSLIDES.RETRACTED);
+            intake.preset(constants.INTAKE.RETRACTED);
         }
     };
 
@@ -166,8 +180,8 @@ public class left extends OpMode{
                         leftAutoConstants.startPoint,
                         leftAutoConstants.navigatePreload
                 )))
-                .setConstantHeadingInterpolation(Math.toRadians(leftAutoConstants.navigatePreloadHeading))
-                .addParametricCallback(0.2, scorePosition)
+                .setLinearHeadingInterpolation(Math.toRadians(leftAutoConstants.startHeading), Math.toRadians(leftAutoConstants.navigatePreloadHeading))
+                .addParametricCallback(0.01, scorePosition)
                 .build();
 
         pickup1 = follower.pathBuilder()
@@ -175,7 +189,7 @@ public class left extends OpMode{
                         leftAutoConstants.navigatePreload,
                         leftAutoConstants.pickup1
                 )))
-                .setConstantHeadingInterpolation(Math.toRadians(leftAutoConstants.pickup1Heading))
+                .setLinearHeadingInterpolation(Math.toRadians(leftAutoConstants.navigatePreloadHeading), Math.toRadians(leftAutoConstants.pickup1Heading))
                 .addParametricCallback(0.3, ready)
                 .build();
 
@@ -184,8 +198,8 @@ public class left extends OpMode{
                         leftAutoConstants.pickup1,
                         leftAutoConstants.navigate1
                 )))
-                .setConstantHeadingInterpolation(Math.toRadians(leftAutoConstants.navigate1Heading))
-                .addParametricCallback(0.1, scorePosition)
+                .setLinearHeadingInterpolation(Math.toRadians(leftAutoConstants.pickup1Heading), Math.toRadians(leftAutoConstants.navigate1Heading))
+//                .addParametricCallback(0.1, scorePosition)
                 .build();
 
         pickup2 = follower.pathBuilder()
@@ -193,7 +207,7 @@ public class left extends OpMode{
                         leftAutoConstants.navigate1,
                         leftAutoConstants.pickup2
                 )))
-                .setConstantHeadingInterpolation(Math.toRadians(leftAutoConstants.pickup2Heading))
+                .setLinearHeadingInterpolation(Math.toRadians(leftAutoConstants.navigate1Heading), Math.toRadians(leftAutoConstants.pickup2Heading))
                 .addParametricCallback(0.3, ready)
                 .build();
 
@@ -202,8 +216,8 @@ public class left extends OpMode{
                         leftAutoConstants.pickup2,
                         leftAutoConstants.navigate2
                 )))
-                .setConstantHeadingInterpolation(Math.toRadians(leftAutoConstants.navigate2Heading))
-                .addParametricCallback(0.1, scorePosition)
+                .setLinearHeadingInterpolation(Math.toRadians(leftAutoConstants.pickup2Heading), Math.toRadians(leftAutoConstants.navigate2Heading))
+                //.addParametricCallback(0.1, scorePosition)
                 .build();
 
         pickup3 = follower.pathBuilder()
@@ -212,7 +226,7 @@ public class left extends OpMode{
                         leftAutoConstants.pickup3Control1,
                         leftAutoConstants.pickup3
                 )))
-                .setConstantHeadingInterpolation(Math.toRadians(leftAutoConstants.pickup3Heading))
+                .setLinearHeadingInterpolation(Math.toRadians(leftAutoConstants.navigate2Heading), Math.toRadians(leftAutoConstants.pickup3Heading))
                 .addParametricCallback(0.3, ready)
                 .build();
 
@@ -221,8 +235,8 @@ public class left extends OpMode{
                         leftAutoConstants.pickup3,
                         leftAutoConstants.navigate3
                 )))
-                .setConstantHeadingInterpolation(Math.toRadians(leftAutoConstants.navigate3Heading))
-                .addParametricCallback(0.1, scorePosition)
+                .setLinearHeadingInterpolation(Math.toRadians(leftAutoConstants.pickup3Heading), Math.toRadians(leftAutoConstants.navigate3Heading))
+                //.addParametricCallback(0.1, scorePosition)
                 .build();
 
         park = follower.pathBuilder()
@@ -230,12 +244,13 @@ public class left extends OpMode{
                         leftAutoConstants.navigate3,
                         leftAutoConstants.park
                 )))
-                .setConstantHeadingInterpolation(Math.toRadians(leftAutoConstants.parkHeading))
-                .addParametricCallback(0.3, ready)
+                .setLinearHeadingInterpolation(Math.toRadians(leftAutoConstants.navigate3Heading), Math.toRadians(leftAutoConstants.parkHeading))
+                //.addParametricCallback(0.3, ready)
                 .build();
     }
 
     public void pathUpdater() {
+        boolean hasRun = false;
         switch(nextState) {
             case INIT:
                 currentState = LEFT.INIT;
@@ -244,6 +259,7 @@ public class left extends OpMode{
 
             case START:
                 currentState = LEFT.START;
+                upperClaw.preset(constants.UPPERCLAW.BACK);
                 setNextPath(LEFT.NAVIGATE_PRELOAD);
                 break;
 
@@ -256,16 +272,15 @@ public class left extends OpMode{
                 break;
 
             case SCORE_PRELOAD:
-                if (!follower.isBusy()){
+                if (pathTimer.getElapsedTimeSeconds() > 2.55){
                     currentState = LEFT.SCORE_PRELOAD;
-                    Thread t = new Thread(sampleScore);
-                    t.start();
+                    upperClaw.preset(constants.UPPERCLAW.OPEN);
                     setNextPath(LEFT.PICKUP_1);
                 }
                 break;
 
             case PICKUP_1:
-                if (!follower.isBusy() && actionTimer.getElapsedTimeSeconds() > 3) {
+                if (!follower.isBusy() && actionTimer.getElapsedTimeSeconds() > 0.65) {
                     currentState = LEFT.PICKUP_1;
                     follower.followPath(pickup1);
                     setNextPath(LEFT.NAVIGATE_1);
@@ -273,11 +288,17 @@ public class left extends OpMode{
                 break;
 
             case NAVIGATE_1:
-                if (pathTimer.getElapsedTimeSeconds() > 2.5) {
-                    Thread t = new Thread(pickup);
-                    t.start();
+                if (pathTimer.getElapsedTimeSeconds() > 2 && pathTimer.getElapsedTimeSeconds() < 3.5) {
+                    intake.preset(constants.INTAKE.GROUND);
+                    intake.preset(constants.INTAKE.TAKEIN);
+                    if (pathTimer.getElapsedTime()%30 <= 10) {
+                        hslides.crudeSetCustomExtension(1);
+                    }
                 }
-                if (!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 5) {
+                if (pathTimer.getElapsedTimeSeconds() > 3.5 && pathTimer.getElapsedTimeSeconds() < 5.5) {
+                    transfer.run();
+                }
+                if (pathTimer.getElapsedTimeSeconds() > 6.5) {
                     currentState = LEFT.NAVIGATE_1;
                     follower.followPath(navigate1);
                     setNextPath(LEFT.SCORE_1);
@@ -294,7 +315,7 @@ public class left extends OpMode{
                 break;
 
             case PICKUP_2:
-                if (!follower.isBusy() && actionTimer.getElapsedTimeSeconds() > 3) {
+                if (actionTimer.getElapsedTimeSeconds() > 0.75) {
                     currentState = LEFT.PICKUP_2;
                     follower.followPath(pickup2);
                     setNextPath(LEFT.NAVIGATE_2);
@@ -302,11 +323,17 @@ public class left extends OpMode{
                 break;
 
             case NAVIGATE_2:
-                if (pathTimer.getElapsedTimeSeconds() > 2.5) {
-                    Thread t = new Thread(pickup);
-                    t.start();
+                if (pathTimer.getElapsedTimeSeconds() > 2.25 && pathTimer.getElapsedTimeSeconds() < 3.75) {
+                    intake.preset(constants.INTAKE.GROUND);
+                    intake.preset(constants.INTAKE.TAKEIN);
+                    if (pathTimer.getElapsedTime()%30 <= 10) {
+                        hslides.crudeSetCustomExtension(1);
+                    }
                 }
-                if (!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 5) {
+                if (pathTimer.getElapsedTimeSeconds() > 3.5 && pathTimer.getElapsedTimeSeconds() < 5.5) {
+                    transfer.run();
+                }
+                if (!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 6.5) {
                     currentState = LEFT.NAVIGATE_2;
                     follower.followPath(navigate2);
                     setNextPath(LEFT.SCORE_2);
@@ -323,7 +350,7 @@ public class left extends OpMode{
                 break;
 
             case PICKUP_3:
-                if (!follower.isBusy() && actionTimer.getElapsedTimeSeconds() > 3) {
+                if (!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 0.75) {
                     currentState = LEFT.PICKUP_3;
                     follower.followPath(pickup3);
                     setNextPath(LEFT.NAVIGATE_3);
@@ -331,11 +358,17 @@ public class left extends OpMode{
                 break;
 
             case NAVIGATE_3:
-                if (pathTimer.getElapsedTimeSeconds() > 2.5) {
-                    Thread t = new Thread(pickup);
-                    t.start();
+                if (pathTimer.getElapsedTimeSeconds() > 2 && pathTimer.getElapsedTimeSeconds() < 4) {
+                    intake.preset(constants.INTAKE.GROUND);
+                    intake.preset(constants.INTAKE.TAKEIN);
+                    if (pathTimer.getElapsedTime()%25 <= 10) {
+                        hslides.crudeSetCustomExtension(1);
+                    }
                 }
-                if (!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 5) {
+                if (pathTimer.getElapsedTimeSeconds() > 4 && pathTimer.getElapsedTimeSeconds() < 6) {
+                    transfer.run();
+                }
+                if (!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 6.85) {
                     currentState = LEFT.NAVIGATE_3;
                     follower.followPath(navigate3);
                     setNextPath(LEFT.SCORE_3);
@@ -352,12 +385,15 @@ public class left extends OpMode{
                 break;
 
             case PARK:
-                if (!follower.isBusy()) {
+                if (!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 0.65) {
                     currentState = LEFT.PARK;
-                    follower.followPath(park);
+//                    follower.followPath(park);
                     setNextPath(LEFT.IDLE);
                 }
                 break;
+
+            case IDLE:
+                stop();
         }
 
     }
@@ -378,9 +414,10 @@ public class left extends OpMode{
 
         Constants.setConstants(FConstants.class, LConstants.class);
         follower = new Follower(hardwareMap);
-        follower.setStartingPose(rightAutoConstants.startPose);
+        follower.setStartingPose(leftAutoConstants.startPose);
+        follower.update();
 
-        telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
+        telemetry = new MultipleTelemetry(this.telemetry, FtcDashboard.getInstance().getTelemetry());
 
         intake = new intake();
         upperClaw = new upperClaw();
@@ -388,7 +425,7 @@ public class left extends OpMode{
         hslides = new hslides();
 
         slides.init(hardwareMap);
-        upperClaw.init(hardwareMap);
+        upperClaw.init(hardwareMap, true);
         hslides.init(hardwareMap);
         intake.init(hardwareMap);
 
@@ -411,6 +448,7 @@ public class left extends OpMode{
     public void start() {
         opModeTimer.resetTimer();
         setNextPath(LEFT.START);
+        infoUpdater();
     }
 
     @Override
@@ -435,6 +473,7 @@ public class left extends OpMode{
         telemetry.addData("Right Slide Height: ", slides.getRightHeight());
         telemetry.addLine();
         telemetry.addData("Slide Extension: ", hslides.getState());
+        telemetry.addData("HSlide Positions: ", hslides.toString());
         telemetry.addLine();
         telemetry.update();
     }

@@ -35,35 +35,35 @@ public class leftAutoConstants {
     }
 
 
-    public static final Pose startPose = new Pose(8.270, 80.071, 90);
+    public static final Pose startPose = new Pose(8.270, 110, 0);
     public static final Point startPoint = new Point(startPose);
-    public static final double startHeading = 90;
+    public static final double startHeading = 0;
 
-    public static final Point navigatePreload = new Point(14.000, 130.000, Point.CARTESIAN);
-    public static final double navigatePreloadHeading = -45;
+    public static final Point navigatePreload = new Point(15.000, 124.000, Point.CARTESIAN);
+    public static final double navigatePreloadHeading = 315;
 
-    public static final Point pickup1 = new Point(32.000, 121.000, Point.CARTESIAN);
+    public static final Point pickup1 = new Point(24.000, 121.500, Point.CARTESIAN);
     public static final double pickup1Heading = 0;
 
-    public static final Point navigate1 = new Point(14.000, 130.000, Point.CARTESIAN);
+    public static final Point navigate1 = new Point(17.000, 125.000, Point.CARTESIAN);
     public static double navigate1Heading = -45;
 
 
-    public static final Point pickup2 = new Point(32.000, 131.500, Point.CARTESIAN);
+    public static final Point pickup2 = new Point(24.000, 130.000, Point.CARTESIAN);
     public static double pickup2Heading = 0;
 
-    public static final Point navigate2 = new Point(17.000, 135.500, Point.CARTESIAN);
-    public static double navigate2Heading = 0;
+    public static final Point navigate2 = new Point(16.750, 126.750, Point.CARTESIAN);
+    public static double navigate2Heading = -45;
 
 
-    public static final Point pickup3Control1 = new Point(21.000, 120.000, Point.CARTESIAN);
-    public static final Point pickup3 = new Point(38.500, 131.000, Point.CARTESIAN);
-    public static double pickup3Heading = 60;
+    public static final Point pickup3Control1 = new Point(23.000, 120.000, Point.CARTESIAN);
+    public static final Point pickup3 = new Point(28.750, 126.000, Point.CARTESIAN);
+    public static double pickup3Heading = 41;
 
-    public static final Point navigate3 = new Point(18.700, 134.000, Point.CARTESIAN);
-    public static double navigate3Heading = -20;
+    public static final Point navigate3 = new Point(17.250, 127.250, Point.CARTESIAN);
+    public static double navigate3Heading = -40;
 
 
-    public static final Point park = new Point(58.5, 92, Point.CARTESIAN);
+    public static final Point park = new Point(72.5, 92, Point.CARTESIAN);
     public static double parkHeading = -90;
 }

@@ -92,6 +92,7 @@ public class right extends OpMode{
         public void run() {
             upperClaw.preset(constants.UPPERCLAW.SPECIMEN_ALIGN);
             slides.preset(constants.VSLIDES.LOW_BAR);
+            hslides.preset(constants.HSLIDES.RETRACTED);
         }
     };
 
@@ -117,11 +118,12 @@ public class right extends OpMode{
                 throw new RuntimeException(e);
             }
             upperClaw.preset(constants.UPPERCLAW.OPEN);
-            try {
-                Thread.sleep(350);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
+        }
+    };
+
+    Runnable reset = new Runnable() {
+        @Override
+        public void run() {
             upperClaw.preset(constants.UPPERCLAW.BACK);
             slides.preset(constants.VSLIDES.BASE);
         }
@@ -183,7 +185,6 @@ public class right extends OpMode{
                         rightAutoConstants.align1
                 )))
                 .setConstantHeadingInterpolation(Math.toRadians(0))
-//                .setZeroPowerAccelerationMultiplier(1.5)
                 .build();
 
         push = follower.pathBuilder()
@@ -196,6 +197,7 @@ public class right extends OpMode{
                         rightAutoConstants.align1
                 )))
                 .setConstantHeadingInterpolation(Math.toRadians(0))
+                .addParametricCallback(0.2, reset)
                 .addPath(new Path(new BezierLine(
                         rightAutoConstants.align1,
                         rightAutoConstants.push1
@@ -290,6 +292,7 @@ public class right extends OpMode{
                 )))
                 .setConstantHeadingInterpolation(Math.toRadians(0))
                 .setZeroPowerAccelerationMultiplier(3)
+                .addParametricCallback(0.2, reset)
                 .build();
 
         navigate1 = follower.pathBuilder()
@@ -318,6 +321,7 @@ public class right extends OpMode{
                 )))
                 .setConstantHeadingInterpolation(Math.toRadians(0))
                 .setZeroPowerAccelerationMultiplier(3)
+                .addParametricCallback(0.2, reset)
                 .build();
 
         navigate2 = follower.pathBuilder()
@@ -339,6 +343,7 @@ public class right extends OpMode{
                         rightAutoConstants.pickup
                 )))
                 .setConstantHeadingInterpolation(Math.toRadians(0))
+                .addParametricCallback(0.2, reset)
                 .build();
     }
 
@@ -373,7 +378,7 @@ public class right extends OpMode{
                 break;
 
             case PUSH:
-                if (!follower.isBusy() || pathTimer.getElapsedTimeSeconds() > 1.65) {
+                if (pathTimer.getElapsedTimeSeconds() > 1.65) {
                     currentState = RIGHT.PUSH;
                     follower.followPath(push);
                     setNextPath(RIGHT.NAVIGATE_CACHE);
@@ -396,7 +401,7 @@ public class right extends OpMode{
 //                break;
 
             case PICKUP_CACHE:
-                if (!follower.isBusy()) {
+                if (!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 5) {
                     currentState = RIGHT.PICKUP_CACHE;
                     follower.followPath(pickupCache);
                     setNextPath(RIGHT.NAVIGATE_CACHE);
@@ -404,10 +409,10 @@ public class right extends OpMode{
                 break;
 
             case NAVIGATE_CACHE:
-                if (pathTimer.getElapsedTimeSeconds() > 8) {
+                if (pathTimer.getElapsedTimeSeconds() > 7.95) {
                     upperClaw.preset(constants.UPPERCLAW.CLOSED);
                 }
-                if (pathTimer.getElapsedTimeSeconds() > 8.3) {
+                if (pathTimer.getElapsedTimeSeconds() > 8.15) {
                     Thread t = new Thread(specimen_align);
                     t.start();
                     currentState = RIGHT.NAVIGATE_CACHE;
@@ -434,10 +439,10 @@ public class right extends OpMode{
                 break;
 
             case NAVIGATE_1:
-                if (!follower.isBusy() || pathTimer.getElapsedTimeSeconds() > 2.65) {
+                if (!follower.isBusy() || pathTimer.getElapsedTimeSeconds() > 2.3) {
                     upperClaw.preset(constants.UPPERCLAW.CLOSED);
                 }
-                if (pathTimer.getElapsedTimeSeconds() > 2.85) {
+                if (pathTimer.getElapsedTimeSeconds() > 2.5) {
                     currentState = RIGHT.NAVIGATE_1;
                     follower.followPath(navigate1);
                     setNextPath(RIGHT.SCORE_1);
@@ -462,10 +467,10 @@ public class right extends OpMode{
                 break;
 
             case NAVIGATE_2:
-                if (!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 2.65) {
+                if (!follower.isBusy() || pathTimer.getElapsedTimeSeconds() > 2.3) {
                     upperClaw.preset(constants.UPPERCLAW.CLOSED);
                 }
-                if (pathTimer.getElapsedTimeSeconds() > 2.85) {
+                if (pathTimer.getElapsedTimeSeconds() > 2.5) {
                     currentState = RIGHT.NAVIGATE_2;
                     follower.followPath(navigate2);
                     setNextPath(RIGHT.SCORE_2);
@@ -473,7 +478,7 @@ public class right extends OpMode{
                 break;
 
             case SCORE_2:
-                if (!follower.isBusy() || pathTimer.getElapsedTimeSeconds() > 3.2) {
+                if (!follower.isBusy() || pathTimer.getElapsedTimeSeconds() > 2.8) {
                     currentState = RIGHT.SCORE_2;
                     Thread t = new Thread(specimen_score);
                     t.start();
@@ -482,10 +487,10 @@ public class right extends OpMode{
                 break;
 
             case PARK:
-                if (!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 3) {
+                if (!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 1.55) {
                     currentState = RIGHT.PARK;
                     follower.followPath(park);
-                    setNextPath(RIGHT.PICKUP_CACHE);
+                    setNextPath(RIGHT.IDLE);
                 }
                 break;
 

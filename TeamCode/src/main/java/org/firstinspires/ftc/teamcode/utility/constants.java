@@ -76,13 +76,13 @@ public class constants {
     }
 
     //set servo positions for max extension and retraction
-    public static double pivot_left_extended = 0.32;
+    public static double pivotExtended = 0.32;
     public static double pivot_right_extended = 0.68;
 
-    public static double pivot_left_retracted = 0.025;
-    public static double pivot_right_retracted = 0.975;
+    public static double pivotRetracted = 0.06;
+    public static double pivot_right_retracted = 0.94;
 
-    public static double pivot_left_transfer = 0.20;
+    public static double pivotTransfer = 0.2725;
     public static double pivot_right_transfer = 0.80;
     public static double CRUDE_STEP = 0.007;
 
@@ -98,7 +98,7 @@ public class constants {
     public static int LOW_BAR = 330;
     public static int HIGH_BAR = 540;
     public static int LOW_BASKET = 1250;
-    public static int HIGH_BASKET = 2900;
+    public static int HIGH_BASKET = 3100;
     public static int LOW_RUNG = 1200;
     public static int HIGH_RUNG = 2500;
     public static double MAX_SLIDE_SPEED = 0.8;
@@ -125,15 +125,15 @@ public class constants {
     public static double GROUND_PIVOT = 0.2725;
     public static double PRE_PICKUP = 0.4;
     public static double INIT_PIVOT = 1;
-    public static double TRANSFER = 0.85;
+    public static double TRANSFER = 0.915;
     public static double RETRACTED = 0.925;
 
     //Upper Claw constants (open & close from claw positions)
-    public static double transfer = 0.25;
+    public static double transfer = 0.185;
     public static double autoInit = 0.0;
     public static double back = 1;
-    public static double score = 0.85;
-    public static double specimen = 0.4;
+    public static double score = 0.840;
+    public static double specimen = 0.340;
     public static double specimen_score = 0.65;
 
 }

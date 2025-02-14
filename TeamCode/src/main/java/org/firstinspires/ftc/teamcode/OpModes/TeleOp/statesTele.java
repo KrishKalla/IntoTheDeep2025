@@ -7,6 +7,10 @@
 package org.firstinspires.ftc.teamcode.OpModes.TeleOp;
 
 import com.pedropathing.follower.Follower;
+import com.pedropathing.pathgen.BezierLine;
+import com.pedropathing.pathgen.Path;
+import com.pedropathing.pathgen.PathChain;
+import com.pedropathing.util.Timer;
 import com.pedropathing.localization.Pose;
 import com.pedropathing.util.Constants;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
@@ -20,6 +24,7 @@ import com.pedropathing.util.Timer;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 
+import org.firstinspires.ftc.teamcode.OpModes.TeleOp.TeleConstants.TELE;
 import org.firstinspires.ftc.teamcode.subsystems.hslides;
 import org.firstinspires.ftc.teamcode.subsystems.intake;
 import org.firstinspires.ftc.teamcode.subsystems.slides;
@@ -32,6 +37,13 @@ public class statesTele extends OpMode{
     //Pedro Pathing TeleOp Follower Business
     private Follower follower;
     private final Pose startPose = new Pose(0,0,0);
+
+    private TELE currentState;
+    private TELE nextState = TELE.IDLE;
+    private Timer pathTimer;
+    private Timer actionTimer;
+    private Timer opModeTimer;
+    private PathChain navigate, pickup;
 
     //All Subsystems
     private slides slides;
@@ -46,6 +58,9 @@ public class statesTele extends OpMode{
         Constants.setConstants(FConstants.class, LConstants.class);
         follower = new Follower(hardwareMap);
         follower.setStartingPose(startPose);
+        pathTimer = new Timer();
+        actionTimer = new Timer();
+        opModeTimer = new Timer();
 
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
@@ -61,6 +76,7 @@ public class statesTele extends OpMode{
 
         telemetry.addLine("TeleOp Initiated... Waiting For Start...");
         telemetry.update();
+        buildPaths();
     }
 
     @Override
@@ -75,8 +91,8 @@ public class statesTele extends OpMode{
 
     @Override
     public void start() {
-
         follower.startTeleopDrive();
+        opModeTimer.resetTimer();
 
     }
 
@@ -84,7 +100,11 @@ public class statesTele extends OpMode{
     public void loop() {
         follower.setTeleOpMovementVectors(-gamepad1.left_stick_y, -prioitizedStrafe(), -gamepad1.right_stick_x, true);
         follower.update();
+        pathUpdater();
 
+        if (gamepad1.left_stick_x > 0.5 || gamepad1.left_stick_y > 0.5) {
+            setNextPath(TELE.IDLE);
+        }
         //region Controller 1 Inputs
         //region Slide Inputs
         if (gamepad1.dpad_down) {
@@ -134,6 +154,10 @@ public class statesTele extends OpMode{
         if (gamepad1.right_bumper && gamepad1.left_bumper) {
             slides.preset(constants.VSLIDES.RESET);
         }
+        if (gamepad1.right_stick_button) {
+            buildPaths();
+            setNextPath(TELE.NAVIGATE);
+        }
         //endregion
         //endregion
 
@@ -167,34 +191,54 @@ public class statesTele extends OpMode{
             Runnable specimen_score = new Runnable() {
                 @Override
                 public void run() {
-                    slides.setHeight(420);
+                    slides.preset(constants.VSLIDES.HIGH_BAR);
                     try {
-                        Thread.sleep(500);
+                        Thread.sleep(250);
                     } catch (InterruptedException e) {
                         throw new RuntimeException(e);
                     }
                     upperClaw.preset(constants.UPPERCLAW.SPECIMEN_SCORE);
                     try {
-                        Thread.sleep(350);
-                    } catch (InterruptedException e) {
-                        throw new RuntimeException(e);
-                    }
-                    slides.preset(constants.VSLIDES.HIGH_BAR);
-                    try {
-                        Thread.sleep(500);
+                        Thread.sleep(750);
                     } catch (InterruptedException e) {
                         throw new RuntimeException(e);
                     }
                     upperClaw.preset(constants.UPPERCLAW.OPEN);
-                    try {
-                        Thread.sleep(350);
-                    } catch (InterruptedException e) {
-                        throw new RuntimeException(e);
-                    }
-                    upperClaw.preset(constants.UPPERCLAW.BACK);
-                    slides.preset(constants.VSLIDES.BASE);
+//                    upperClaw.preset(constants.UPPERCLAW.BACK);
+//                    slides.preset(constants.VSLIDES.BASE);
                 }
             };
+//            Runnable specimen_score = new Runnable() {
+//                @Override
+//                public void run() {
+//                    slides.setHeight(420);
+//                    try {
+//                        Thread.sleep(500);
+//                    } catch (InterruptedException e) {
+//                        throw new RuntimeException(e);
+//                    }
+//                    upperClaw.preset(constants.UPPERCLAW.SPECIMEN_SCORE);
+//                    try {
+//                        Thread.sleep(350);
+//                    } catch (InterruptedException e) {
+//                        throw new RuntimeException(e);
+//                    }
+//                    slides.preset(constants.VSLIDES.HIGH_BAR);
+//                    try {
+//                        Thread.sleep(500);
+//                    } catch (InterruptedException e) {
+//                        throw new RuntimeException(e);
+//                    }
+//                    upperClaw.preset(constants.UPPERCLAW.OPEN);
+//                    try {
+//                        Thread.sleep(350);
+//                    } catch (InterruptedException e) {
+//                        throw new RuntimeException(e);
+//                    }
+//                    upperClaw.preset(constants.UPPERCLAW.BACK);
+//                    slides.preset(constants.VSLIDES.BASE);
+//                }
+//            };
             Thread t = new Thread(specimen_score);
             t.start();
         }
@@ -219,13 +263,14 @@ public class statesTele extends OpMode{
                         throw new RuntimeException(e);
                     }
                     Timer timer = new Timer();
-                    upperClaw.preset(constants.UPPERCLAW.BACK);
+                    upperClaw.preset(constants.UPPERCLAW.SCORE);
                     while (timer.getElapsedTimeSeconds() < 0.75){
                         intake.preset(constants.INTAKE.PUSHOUT);
                     }
                     hslides.preset(constants.HSLIDES.RETRACTED);
                     intake.preset(constants.INTAKE.RETRACTED);
                     intake.preset(constants.INTAKE.OFF);
+                    slides.preset(constants.VSLIDES.HIGH_BASKET);
                 }
             };
             Thread t = new Thread(transfer);
@@ -284,6 +329,16 @@ public class statesTele extends OpMode{
             hslides.preset(constants.HSLIDES.RESET);
         }
 
+        if (opModeTimer.getElapsedTimeSeconds() == 80){
+            gamepad1.rumble(200);
+            gamepad2.rumble(200);
+        }
+
+        if (opModeTimer.getElapsedTimeSeconds() == 110) {
+            gamepad1.rumble(500);
+            gamepad2.rumble(500);
+        }
+
         //endregion
         //endregion
 
@@ -312,7 +367,10 @@ public class statesTele extends OpMode{
         telemetry.addLine("----------CLAW---------");
         telemetry.addLine(upperClaw.toString());
         telemetry.addLine(intake.toString());
-
+        telemetry.addLine();
+        telemetry.addData("Current State: ", currentState);
+        telemetry.addData("Next State: ", nextState);
+        telemetry.addData("isRightPressed", gamepad1.right_stick_button);
         telemetry.update();
     }
 
@@ -326,6 +384,121 @@ public class statesTele extends OpMode{
         else {
             return gamepad1.left_stick_x;
         }
+    }
+
+    public void pathUpdater() {
+        Runnable specimen_align = new Runnable() {
+            @Override
+            public void run() {
+                upperClaw.preset(constants.UPPERCLAW.SPECIMEN_ALIGN);
+                slides.preset(constants.VSLIDES.LOW_BAR);
+            }
+        };
+
+        Runnable specimen_score = new Runnable() {
+                @Override
+                public void run() {
+                    slides.setHeight(420);
+                    try {
+                        Thread.sleep(350);
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+                    upperClaw.preset(constants.UPPERCLAW.SPECIMEN_SCORE);
+                    try {
+                        Thread.sleep(350);
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+                    slides.preset(constants.VSLIDES.HIGH_BAR);
+                    try {
+                        Thread.sleep(350);
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+                    upperClaw.preset(constants.UPPERCLAW.OPEN);
+                    upperClaw.preset(constants.UPPERCLAW.BACK);
+                }
+            };
+        switch (nextState){
+            case NAVIGATE:
+                follower.setPose(new Pose(TeleConstants.pickup.getX(), TeleConstants.pickup.getY(), 0));
+                currentState = TELE.NAVIGATE;
+                Thread t = new Thread(specimen_align);
+                t.start();
+                follower.followPath(navigate);
+                setNextPath(TELE.SCORE);
+                break;
+
+            case SCORE:
+                if (!follower.isBusy() || pathTimer.getElapsedTimeSeconds() > 2.8) {
+                    currentState = TELE.SCORE;
+                    Thread score = new Thread(specimen_score);
+                    score.start();
+                    setNextPath(TELE.PICKUP);
+                }
+                break;
+
+            case PICKUP:
+                if (pathTimer.getElapsedTimeSeconds() > 1.55) {
+                    currentState = TELE.PICKUP;
+                    follower.followPath(pickup);
+                    setNextPath(TELE.RESET);
+                }
+                break;
+            case RESET:
+                if (pathTimer.getElapsedTimeSeconds() > 2.65) {
+                    currentState = TELE.RESET;
+                    follower.startTeleopDrive();
+                    setNextPath(TELE.IDLE);
+                }
+            case IDLE:
+                currentState = TELE.IDLE;
+        }
+    }
+
+    public void buildPaths() {
+        Runnable specimen_align = new Runnable() {
+            @Override
+            public void run() {
+                upperClaw.preset(constants.UPPERCLAW.SPECIMEN_ALIGN);
+                slides.preset(constants.VSLIDES.LOW_BAR);
+            }
+        };
+
+        Runnable ready = new Runnable() {
+            @Override
+            public void run() {
+                slides.preset(constants.VSLIDES.BASE);
+                upperClaw.preset(constants.UPPERCLAW.BACK);
+            }
+        };
+
+        navigate = follower.pathBuilder()
+                .addPath(new Path(new BezierLine(
+                        TeleConstants.pickup,
+                        TeleConstants.navigate
+                )))
+                .setConstantHeadingInterpolation(Math.toRadians(0))
+                .setZeroPowerAccelerationMultiplier(4)
+                .setPathEndVelocityConstraint(35)
+                .build();
+
+        pickup = follower.pathBuilder()
+                .addPath(new Path(new BezierLine(
+                        TeleConstants.navigate,
+                        TeleConstants.pickup
+                )))
+                .setConstantHeadingInterpolation(Math.toRadians(0))
+                .addParametricCallback(0.2, ready)
+                .setZeroPowerAccelerationMultiplier(3)
+                .build();
+    }
+
+    public void setNextPath(TELE nextPath) {
+        nextState = nextPath;
+        pathTimer.resetTimer();
+        actionTimer.resetTimer();
     }
 
 }
