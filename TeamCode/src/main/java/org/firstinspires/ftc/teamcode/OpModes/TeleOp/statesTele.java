@@ -98,7 +98,7 @@ public class statesTele extends OpMode{
 
     @Override
     public void loop() {
-        follower.setTeleOpMovementVectors(-gamepad1.left_stick_y, -prioitizedStrafe(), -gamepad1.right_stick_x, true);
+        follower.setTeleOpMovementVectors(-prioritizedDrive(), -prioitizedStrafe(), -gamepad1.right_stick_x, true);
         follower.update();
         pathUpdater();
 
@@ -383,6 +383,18 @@ public class statesTele extends OpMode{
         }
         else {
             return gamepad1.left_stick_x;
+        }
+    }
+
+    public double prioritizedDrive() {
+        if (Math.abs(gamepad1.left_stick_y) > 0.05) {
+            return gamepad1.left_stick_y;
+        }
+        else if (Math.abs(gamepad2.right_stick_x) > 0.05) {
+            return gamepad2.right_stick_y;
+        }
+        else {
+            return gamepad1.left_stick_y;
         }
     }
 

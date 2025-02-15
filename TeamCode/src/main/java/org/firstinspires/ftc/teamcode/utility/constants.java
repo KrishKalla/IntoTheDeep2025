@@ -95,7 +95,7 @@ public class constants {
 
     //VSLIDE CONSTANTS
     public static int BASE = 0;
-    public static int LOW_BAR = 330;
+    public static int LOW_BAR = 370;
     public static int HIGH_BAR = 540;
     public static int LOW_BASKET = 1250;
     public static int HIGH_BASKET = 3100;

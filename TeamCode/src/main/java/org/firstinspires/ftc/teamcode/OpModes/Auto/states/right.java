@@ -487,7 +487,7 @@ public class right extends OpMode{
                 break;
 
             case PARK:
-                if (!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 1.55) {
+                if (pathTimer.getElapsedTimeSeconds() > 1.55) {
                     currentState = RIGHT.PARK;
                     follower.followPath(park);
                     setNextPath(RIGHT.IDLE);
