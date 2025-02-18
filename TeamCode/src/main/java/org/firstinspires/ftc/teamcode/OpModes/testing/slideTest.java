@@ -9,7 +9,7 @@ import org.firstinspires.ftc.teamcode.subsystems.slides;
 
 import org.firstinspires.ftc.teamcode.utility.constants;
 
-@TeleOp(name = "TeleOp", group = "testing")
+@TeleOp(name = "SlideTest", group = "testing")
 public class slideTest extends OpMode {
 
     private slides slides;

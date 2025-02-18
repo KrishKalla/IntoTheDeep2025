@@ -50,7 +50,7 @@ public class AConstants {
         public static final Point navigateToSample2 = new Point(66, 12, Point.CARTESIAN);
         public static final Point navigateToSample2Control1 = new Point(66, 33, Point.CARTESIAN);
 
-        public static final Point pushSample2 = new Point(16, 12, Point.CARTESIAN);
+        public static final Point pushSample2 = new Point(12.5, 12, Point.CARTESIAN);
 
         public static final Point navigateToPickup = new Point(18.5, 23.5, Point.CARTESIAN);
         public static final Point navigateToPickupControl1 = new Point(17, 66, Point.CARTESIAN);
@@ -112,7 +112,7 @@ public class AConstants {
         public static final Point PushSample2 = new Point(13, 16.5);
 
 
-        public static final Point pickup = new Point(14.5, 26);
+        public static final Point pickup = new Point(12.75, 26);
 
 
         public static final Point navigateToScore = new Point(30, 72);
